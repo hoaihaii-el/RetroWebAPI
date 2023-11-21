@@ -1,0 +1,13 @@
+﻿using RetroFootballAPI.Models;
+
+namespace RetroFootballAPI.Repositories
+{
+    public interface ICustomerRepo
+    {
+        Task<IEnumerable<Customer>> GetAll();
+        Task<Customer> GetByID(string id);
+        Task<Customer> Add(Customer customer);
+        Task<Customer> Update(Customer customer);
+        Task<Customer> Delete(string id);
+    }
+}
