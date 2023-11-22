@@ -16,35 +16,35 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("get-all")]
         public async Task<ActionResult> GetCustomers()
         {
             return Ok(await _repo.GetAll());
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("get-by-id/{id}")]
         public async Task<ActionResult> GetCustomer(string id)
         {
             return Ok(await _repo.GetByID(id));
         }
 
 
-        [HttpPut("{customer}")]
+        [HttpPut("update/{customer}")]
         public async Task<IActionResult> UpdateCustomer(Customer customer)
         {
             return Ok(await _repo.Update(customer));
         }
 
 
-        [HttpPost]
+        [HttpPost("new-customer")]
         public async Task<IActionResult> AddCustomer(Customer customer)
         {
             return Ok(await _repo.Add(customer));
         }
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteCustomer(string id)
         {
             return Ok(await _repo.Delete(id));

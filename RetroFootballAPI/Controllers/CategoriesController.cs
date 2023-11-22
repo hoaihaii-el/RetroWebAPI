@@ -15,7 +15,7 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpGet("{type}")]
+        [HttpGet("get-by-type/{type}")]
         public async Task<IActionResult> GetCategory(string type)
         {
             switch(type)

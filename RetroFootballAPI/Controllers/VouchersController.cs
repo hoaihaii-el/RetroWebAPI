@@ -16,42 +16,42 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpGet("all")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _repo.GetAll());
         }
 
 
-        [HttpGet("available")]
+        [HttpGet("get-available")]
         public async Task<IActionResult> GetAvailable()
         {
             return Ok(await _repo.GetAvailable());
         }
 
 
-        [HttpGet("{voucherID}")]
+        [HttpGet("get-by-id/{voucherID}")]
         public async Task<IActionResult> GetVoucher(string voucherID)
         {
             return Ok(await _repo.GetById(voucherID));
         }
 
 
-        [HttpPut("{voucher}")]
+        [HttpPut("update/{voucher}")]
         public async Task<IActionResult> Update(Voucher voucher)
         {
             return Ok(await _repo.Update(voucher));
         }
 
 
-        [HttpPost]
+        [HttpPost("new-voucher")]
         public async Task<IActionResult> Add(Voucher voucher)
         {
             return Ok(await _repo.Add(voucher));
         }
 
 
-        [HttpDelete("{voucherID}")]
+        [HttpDelete("delete/{voucherID}")]
         public async Task<IActionResult> DeleteVoucher(string voucherID)
         {
             return Ok(await _repo.Delete(voucherID));

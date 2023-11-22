@@ -17,14 +17,14 @@ namespace RetroFootballAPI.Controllers
 
 
 
-        [HttpGet("{customerID}")]
+        [HttpGet("get-all/{customerID}")]
         public async Task<ActionResult> GetAll(string customerID)
         {
             return Ok(await _repo.GetAll(customerID));
         }
 
 
-        [HttpGet("{customerID}/{priority}")]
+        [HttpGet("get-by-id/{customerID}/{priority}")]
         public async Task<ActionResult> GetDeliveryInfo(string customerID, int priority)
         {
             return Ok(await _repo.GetByID(customerID, priority));
@@ -38,14 +38,14 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("new-info")]
         public async Task<ActionResult> Add(DeliveryInfoVM info)
         {
             return Ok(await _repo.Add(info));
         }
 
 
-        [HttpPut("{info}")]
+        [HttpPut("update/{info}")]
         public async Task<IActionResult> UpdateCustomer(DeliveryInfoVM info)
         {
             return Ok(await _repo.Update(info));
@@ -53,7 +53,7 @@ namespace RetroFootballAPI.Controllers
 
 
 
-        [HttpDelete("{customerID}/{priority}")]
+        [HttpDelete("delete/{customerID}/{priority}")]
         public async Task<IActionResult> Delete(string customerID, int priority)
         {
             return Ok(await _repo.Delete(customerID, priority));

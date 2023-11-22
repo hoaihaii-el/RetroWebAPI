@@ -29,7 +29,7 @@ namespace RetroFootballAPI.Controllers
             return Unauthorized();
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(Login user)
         {
             var result = await _repo.Login(user);

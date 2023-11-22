@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using RetroFootballAPI.Hubs;
 using RetroFootballAPI.Middleware;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
@@ -53,6 +54,7 @@ namespace RetroFootballAPI
             builder.Services.AddScoped<IVoucherRepo, VoucherRepo>();
             builder.Services.AddScoped<IWishListRepo, WishListRepo>();
             builder.Services.AddScoped<IAccountRepo, AccountRepo>();
+            builder.Services.AddScoped<IChatRepo, ChatRepo>();
 
             builder.Services.AddAuthentication(options => 
             {
@@ -83,6 +85,8 @@ namespace RetroFootballAPI
 
             });
 
+            builder.Services.AddSignalR();
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -103,6 +107,8 @@ namespace RetroFootballAPI
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.MapHub<ChatHub>("/Hubs/ChatHub");
 
             app.MapControllers();
 

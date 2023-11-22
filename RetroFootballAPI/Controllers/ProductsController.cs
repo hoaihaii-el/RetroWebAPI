@@ -16,14 +16,14 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _repo.GetAll());
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("get-by-id/{id}")]
         public async Task<IActionResult> GetProduct(string id)
         {
             return Ok(await _repo.GetByID(id));
@@ -44,21 +44,21 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpPut("{product}")]
+        [HttpPut("update/{product}")]
         public async Task<IActionResult> Update(Product product)
         {
             return Ok(await _repo.Update(product));
         }
 
 
-        [HttpPost]
+        [HttpPost("new-product")]
         public async Task<IActionResult> Add(Product product)
         {
             return Ok(await _repo.Add(product));
         }
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
             return Ok(await _repo.Delete(id));

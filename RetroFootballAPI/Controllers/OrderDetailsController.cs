@@ -16,21 +16,21 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpGet("{orderID}")]
+        [HttpGet("get-detail/{orderID}")]
         public async Task<IActionResult> GetByOrderID(int orderID)
         {
             return Ok(await _repo.GetByOrderID(orderID));
         }
 
 
-        [HttpPost]
+        [HttpPost("add-detail")]
         public async Task<IActionResult> Add(OrderDetailVM orderDetail)
         {
             return Ok(await _repo.Add(orderDetail));
         }
 
 
-        [HttpDelete("{customerID}/{productID}/{size}")]
+        [HttpDelete("delete/{customerID}/{productID}/{size}")]
         public async Task<IActionResult> Delete(string customerID, string productID, string size)
         {
             return Ok(await _repo.Delete(customerID, productID, size));

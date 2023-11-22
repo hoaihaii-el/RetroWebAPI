@@ -38,7 +38,7 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("add-to-cart")]
         public async Task<IActionResult> AddToCart(CartVM cart)
         {
             try

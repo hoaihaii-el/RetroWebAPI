@@ -16,7 +16,7 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpGet("{productID}")]
+        [HttpGet("get-all/{productID}")]
         public async Task<ActionResult> GetAll(string productID)
         {
             return Ok(await _repo.GetAll(productID));
@@ -30,14 +30,14 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("new-feedback")]
         public async Task<ActionResult> Add(FeedbackVM feedback)
         {
             return Ok(await _repo.Add(feedback));
         }
 
 
-        [HttpPut("{feedback}")]
+        [HttpPut("update/{feedback}")]
         public async Task<IActionResult> Update(FeedbackVM feedback)
         {
             return Ok(await _repo.Update(feedback));
