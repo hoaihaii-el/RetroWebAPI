@@ -13,49 +13,10 @@ namespace RetroFootballAPI.Services
     public class ChatRepo : IChatRepo
     {
         private readonly DataContext _context;
-        private readonly SqlTableDependency<Message> _messageTableListener;
-        private readonly SqlTableDependency<ChatRoom> _chatRoomTableListener;
-        private readonly IHubContext<ChatHub> _hubContext;
-        private readonly IConfiguration _config;
-
-        public ChatRepo(DataContext context, IHubContext<ChatHub> hubContext, IConfiguration config)
+        public ChatRepo(DataContext context)
         {
             _context = context;
-            _hubContext = hubContext;
-            _config = config;
-
-            _messageTableListener = new SqlTableDependency<Message>(_config["ConnectionStrings:ConnectedDB"], "Messages");
-            _messageTableListener.OnChanged += MessagesChanged;
-            _messageTableListener.Start();
-
-            _chatRoomTableListener = new SqlTableDependency<ChatRoom>(_config["ConnectionStrings:ConnectedDB"], "ChatRooms");
-            _chatRoomTableListener.OnChanged += RoomsChanged;
-            _chatRoomTableListener.Start();
         }
-
-        private async void MessagesChanged(object sender, RecordChangedEventArgs<Message> e)
-        {
-            var newMessage = e.Entity;
-
-            if (newMessage == null)
-            {
-                return;
-            }
-
-            var messages = GetAllMessages(newMessage.RoomID ?? 1);
-            var room = await _context.ChatRooms.FindAsync(newMessage.RoomID);
-
-            if (!newMessage.IsCustomerSend)
-            {
-                await _hubContext.Clients.All.SendAsync("NewMessage", room?.CustomerID, messages);
-            }
-        }
-
-        private void RoomsChanged(object sender, RecordChangedEventArgs<ChatRoom> e)
-        {
-            throw new NotImplementedException();
-        }
-
 
         public async Task<ChatRoom> AddRoom(ChatRoomVM room)
         {

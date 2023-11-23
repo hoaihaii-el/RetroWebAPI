@@ -54,7 +54,8 @@ namespace RetroFootballAPI
             builder.Services.AddScoped<IVoucherRepo, VoucherRepo>();
             builder.Services.AddScoped<IWishListRepo, WishListRepo>();
             builder.Services.AddScoped<IAccountRepo, AccountRepo>();
-            builder.Services.AddScoped<IChatRepo, ChatRepo>();
+
+            builder.Services.AddSingleton<IChatRepo, ChatRepo>();
 
             builder.Services.AddAuthentication(options => 
             {
@@ -108,9 +109,9 @@ namespace RetroFootballAPI
 
             app.UseAuthorization();
 
-            app.MapHub<ChatHub>("/Hubs/ChatHub");
-
             app.MapControllers();
+
+            app.MapHub<ChatHub>("/chathub");
 
             app.Run();
         }
