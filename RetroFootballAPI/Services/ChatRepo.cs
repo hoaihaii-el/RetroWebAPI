@@ -90,5 +90,18 @@ namespace RetroFootballAPI.Services
                 .Where(m => m.RoomID == roomID)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<string>> GetAdminsId()
+        {
+            var roleAdminID = await _context.Roles
+                .Where(r => r.Name == "Admin")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            return await _context.UserRoles
+                .Where(u => u.RoleId == roleAdminID)
+                .Select(u => u.UserId)
+                .ToListAsync();
+        }
     }
 }

@@ -37,13 +37,25 @@ namespace RetroFootballAPI.Controllers
         {
             if (!message.IsCustomerSend)
             {
-                await _hub.Clients.User(userID).SendAsync("ReceiveMessage", message);
+                if (ChatHub.userConnections.ContainsKey(userID))
+                {
+                    await _hub.Clients.Client(ChatHub.userConnections[userID])
+                        .SendAsync("ReceiveMessage", message);
+                }
             }
             else
             {
-                // get list admin ID, if admin is connected -> send message
+                var adminIDs = await _repo.GetAdminsId();
+
+                foreach (var adminID in adminIDs)
+                {
+                    if (ChatHub.userConnections.ContainsKey(adminID))
+                    {
+                        await _hub.Clients.Client(ChatHub.userConnections[adminID])
+                        .SendAsync("ReceiveMessage", message);
+                    }
+                }
             }
-            
 
             return Ok(await _repo.AddMessage(message));
         }
