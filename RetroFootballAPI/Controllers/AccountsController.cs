@@ -41,5 +41,28 @@ namespace RetroFootballAPI.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("google-login")]
+        public IActionResult GoogleLogin()
+        {
+            var redirectUri = "/api/Account/ExternalLoginResponse";
+
+            var properties = _repo.GoogleLogin(redirectUri);
+
+            return new ChallengeResult("Google", properties);
+        }
+
+        [HttpGet("ExternalLoginResponse")]
+        public async Task<IActionResult> ExternalLoginResponse()
+        {
+            var result = await _repo.ExternalLoginResponse();
+
+            if (string.IsNullOrEmpty(result))
+            {
+                return Unauthorized();
+            }
+
+            return Ok(result);
+        }
     }
 }

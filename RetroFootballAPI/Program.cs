@@ -54,10 +54,9 @@ namespace RetroFootballAPI
             builder.Services.AddScoped<IVoucherRepo, VoucherRepo>();
             builder.Services.AddScoped<IWishListRepo, WishListRepo>();
             builder.Services.AddScoped<IAccountRepo, AccountRepo>();
+            builder.Services.AddScoped<IChatRepo, ChatRepo>();
 
-            builder.Services.AddSingleton<IChatRepo, ChatRepo>();
-
-            builder.Services.AddAuthentication(options => 
+            builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -76,6 +75,10 @@ namespace RetroFootballAPI
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
                     .GetBytes(builder.Configuration["JWT:SecretKey"]))
                 };
+            }).AddGoogle(options => {
+                options.ClientId = "640334320661-o8g4cftmjgvqii623tf574447oa6spov.apps.googleusercontent.com";
+                options.ClientSecret = "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";
+                options.SignInScheme = IdentityConstants.ExternalScheme;
             });
 
             builder.Services.AddAuthorization(options =>

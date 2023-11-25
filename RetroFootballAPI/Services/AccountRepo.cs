@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using RetroFootballAPI.Models;
@@ -72,6 +73,80 @@ namespace RetroFootballAPI.Services
             };
 
             return await _userManager.CreateAsync(user, register.Password);
+        }
+
+        public AuthenticationProperties GoogleLogin(string redirectUri)
+        {
+            return _signInManager
+                .ConfigureExternalAuthenticationProperties("Google", redirectUri);
+        }
+
+        public async Task<string> ExternalLoginResponse()
+        {
+            var info = await _signInManager
+                .GetExternalLoginInfoAsync();
+
+            if (info == null)
+            {
+                return string.Empty;
+            }
+
+            var result = await _signInManager
+                .ExternalLoginSignInAsync(
+                    info.LoginProvider, 
+                    info.ProviderKey, 
+                    false
+                );
+
+            var email = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
+
+            var authClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, email ?? ""),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var authenKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_config["JWT:SecretKey"])
+                );
+
+            var token = new JwtSecurityToken(
+                issuer: _config["JWT:ValidIssuer"],
+                audience: _config["JWT:ValidAudience"],
+                expires: DateTime.Now.AddDays(7),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(
+                    authenKey,
+                    SecurityAlgorithms.HmacSha256Signature)
+                );
+
+            if (result.Succeeded)
+            {
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+
+            var user = new AppUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = email,
+                Email = email
+            };
+
+            var create = await _userManager.CreateAsync(user);
+
+            if (create.Succeeded)
+            {
+                var login = await _userManager.AddLoginAsync(user, info);
+
+                if (login.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    return new JwtSecurityTokenHandler().WriteToken(token);
+                }
+            }
+
+            return string.Empty;
         }
     }
 }
