@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using RetroFootballAPI.Hubs;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
 
@@ -9,10 +11,12 @@ namespace RetroFootballAPI.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderRepo _repo;
+        private readonly IHubContext<ChatHub> _hub;
 
-        public OrdersController(IOrderRepo repo)
+        public OrdersController(IOrderRepo repo, IHubContext<ChatHub> hub)
         {
             _repo = repo;
+            _hub = hub;
         }
 
 
@@ -54,7 +58,15 @@ namespace RetroFootballAPI.Controllers
         [HttpPut("update/{orderID}")]
         public async Task<IActionResult> UpdateStatus(int orderID)
         {
-            return Ok(await _repo.UpdateStatus(orderID));
+            var order = await _repo.UpdateStatus(orderID);
+
+            if (ChatHub.userConnections.ContainsKey(order.CustomerID ?? ""))
+            {
+                await _hub.Clients.Client(ChatHub.userConnections[order.CustomerID ?? ""])
+                        .SendAsync("ReceiveMessage", order);
+            }
+
+            return Ok();
         }
     }
 }
