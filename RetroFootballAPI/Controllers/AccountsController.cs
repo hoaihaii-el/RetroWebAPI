@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
@@ -42,18 +44,20 @@ namespace RetroFootballAPI.Controllers
             return Ok(result);
         }
 
-        [HttpGet("google-login")]
+        [AllowAnonymous]
+        [HttpGet("GoogleLogin")]
         public IActionResult GoogleLogin()
         {
-            var redirectUri = "/api/Account/ExternalLoginResponse";
+            var redirectUri = "/api/Accounts/ExternalLoginResponse";
 
             var properties = _repo.GoogleLogin(redirectUri);
 
             return new ChallengeResult("Google", properties);
         }
 
+        [AllowAnonymous]
         [HttpGet("ExternalLoginResponse")]
-        public async Task<IActionResult> ExternalLoginResponse()
+        public async Task<IActionResult> ExternalLoginResponse(string? returnURL = null, string? remoteURL = null)
         {
             var result = await _repo.ExternalLoginResponse();
 

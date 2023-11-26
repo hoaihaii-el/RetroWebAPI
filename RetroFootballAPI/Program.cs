@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -60,8 +61,10 @@ namespace RetroFootballAPI
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(opts =>
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddJwtBearer(opts =>
             {
                 opts.SaveToken = true;
                 opts.RequireHttpsMetadata = false;
@@ -75,10 +78,30 @@ namespace RetroFootballAPI
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
                     .GetBytes(builder.Configuration["JWT:SecretKey"]))
                 };
-            }).AddGoogle(options => {
-                options.ClientId = "640334320661-o8g4cftmjgvqii623tf574447oa6spov.apps.googleusercontent.com";
-                options.ClientSecret = "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";
-                options.SignInScheme = IdentityConstants.ExternalScheme;
+            })
+            .AddGoogle(options =>
+            {
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.ClientId = builder.Configuration["Authentication:Google:ClientID"];
+                options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                options.CorrelationCookie.SameSite = SameSiteMode.None;
+                options.CallbackPath = "/api/Accounts/ExternalLoginResponse";
+            });
+
+            //builder.Services.Configure<CookiePolicyOptions>(options =>
+            //{
+            //    options.CheckConsentNeeded = context => true;
+            //    options.MinimumSameSitePolicy = SameSiteMode.None;
+            //    options.OnAppendCookie = cookieContext =>
+            //        CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+            //});
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
             });
 
             builder.Services.AddAuthorization(options =>
@@ -107,6 +130,13 @@ namespace RetroFootballAPI
             app.UseHttpsRedirection();
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+            app.UseCors("CorsPolicy");
+
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.None
+            });
 
             app.UseAuthentication();
 

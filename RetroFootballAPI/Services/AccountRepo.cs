@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
+using RetroFootballWeb.Repository;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -15,21 +17,24 @@ namespace RetroFootballAPI.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConfiguration _config;
+        private readonly DataContext _context;
 
         public AccountRepo(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            IConfiguration config) 
+            IConfiguration config,
+            DataContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _config = config;
+            _context = context;
         }
 
 
         public async Task<string> Login(Login user)
         {
             var result = await _signInManager.PasswordSignInAsync(
-                user.Email,
+                user.UserName,
                 user.Password,
                 false,
                 false
@@ -40,9 +45,18 @@ namespace RetroFootballAPI.Services
                 return string.Empty;
             }
 
+            var userLogged = await _context.Users
+                .Where(u => u.UserName == user.UserName)
+                .FirstOrDefaultAsync();
+
+            if (userLogged == null) 
+            { 
+                return string.Empty;
+            }
+
             var authClaims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Email, userLogged.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

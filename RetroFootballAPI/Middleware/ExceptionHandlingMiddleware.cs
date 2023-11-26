@@ -24,13 +24,6 @@ namespace RetroFootballAPI.Middleware
                 var errorResponse = new { error = "Resource not found" };
                 await context.Response.WriteAsJsonAsync(errorResponse);
             }
-            catch
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Response.ContentType = "application/json";
-                var errorResponse = new { error = "Internal server error" };
-                await context.Response.WriteAsJsonAsync(errorResponse);
-            }
         }
     }
 }
