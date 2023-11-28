@@ -126,5 +126,66 @@ namespace RetroFootballAPI.Services
                       (detail, product) => product)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Product>> GetByCategory(string cate, string value, int page, int productPerPage)
+        {
+            IEnumerable<Product> products;
+
+            if (cate.Equals("Club", StringComparison.OrdinalIgnoreCase))
+            {
+                products = await _context.Products
+                    .Where(p => p.Club.Equals(value, StringComparison.OrdinalIgnoreCase))
+                    .ToListAsync();
+            }
+            else
+            if (cate.Equals("Nation", StringComparison.OrdinalIgnoreCase))
+            {
+                products = await _context.Products
+                    .Where(p => p.Nation.Equals(value, StringComparison.OrdinalIgnoreCase))
+                    .ToListAsync();
+            }
+            products = await _context.Products
+                    .Where(p => p.Season.Equals(value, StringComparison.OrdinalIgnoreCase))
+                    .ToListAsync();
+
+            return products
+                .Skip((page - 1) * productPerPage)
+                .Take(productPerPage);
+        }
+
+        public async Task<IEnumerable<Product>> GetByPrice(decimal min, decimal max, int page, int productPerPage)
+        {
+            return await _context.Products
+                .Where(p => p.Price >= min && p.Price <= max)
+                .Skip((page - 1) * productPerPage)
+                .Take(productPerPage)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetProductByPage(int page, int productPerPage)
+        {
+            return await _context.Products
+                .Skip((page - 1) * productPerPage)
+                .Take(productPerPage)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetByCheckBox(List<string> value, int page, int productPerPage)
+        {
+            return await _context.Products
+                .Where(p => value.Any(x => p.Name.Contains(x)))
+                .Skip((page - 1) * productPerPage)
+                .Take(productPerPage)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetBySearch(string value, int page, int productPerPage)
+        {
+            return await _context.Products
+                .Where(p => p.Name.Contains(value, StringComparison.OrdinalIgnoreCase))
+                .Skip((page - 1) * productPerPage)
+                .Take(productPerPage)
+                .ToListAsync();
+        }
     }
 }

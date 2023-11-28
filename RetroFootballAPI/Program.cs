@@ -1,3 +1,5 @@
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -61,47 +63,51 @@ namespace RetroFootballAPI
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options =>
+            {
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.None;
+            })
             .AddJwtBearer(opts =>
             {
                 opts.SaveToken = true;
-                opts.RequireHttpsMetadata = false;
-                opts.TokenValidationParameters = new
-                    TokenValidationParameters
+                opts.RequireHttpsMetadata = true;
+                opts.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidAudience = builder.Configuration["JWT:ValidAudience"],
                     ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                    .GetBytes(builder.Configuration["JWT:SecretKey"]))
+                    .GetBytes(builder.Configuration["JWT:SecretKey"])),
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(1)
+                };
+                opts.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                        {
+                            context.Response.Headers.Add("Token-Expired", "true");
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             })
             .AddGoogle(options =>
             {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ClientId = builder.Configuration["Authentication:Google:ClientID"];
                 options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-                options.CorrelationCookie.SameSite = SameSiteMode.None;
-                options.CallbackPath = "/api/Accounts/ExternalLoginResponse";
+                options.SignInScheme = IdentityConstants.ExternalScheme;
             });
 
-            //builder.Services.Configure<CookiePolicyOptions>(options =>
-            //{
-            //    options.CheckConsentNeeded = context => true;
-            //    options.MinimumSameSitePolicy = SameSiteMode.None;
-            //    options.OnAppendCookie = cookieContext =>
-            //        CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
-            //});
-
-            builder.Services.AddCors(options =>
+            builder.Services.Configure<CookiePolicyOptions>(options =>
             {
-                options.AddPolicy("CorsPolicy", builder => builder
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.Secure = CookieSecurePolicy.Always;
             });
 
             builder.Services.AddAuthorization(options =>
@@ -130,13 +136,6 @@ namespace RetroFootballAPI
             app.UseHttpsRedirection();
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-            app.UseCors("CorsPolicy");
-
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.None
-            });
 
             app.UseAuthentication();
 

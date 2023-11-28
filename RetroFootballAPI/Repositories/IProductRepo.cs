@@ -1,4 +1,5 @@
-﻿using RetroFootballAPI.Models;
+﻿using Humanizer.Localisation.TimeToClockNotation;
+using RetroFootballAPI.Models;
 
 namespace RetroFootballAPI.Repositories
 {
@@ -9,6 +10,11 @@ namespace RetroFootballAPI.Repositories
         Task<IEnumerable<Product>> BestSeller();
         Task<IEnumerable<Product>> TopSelling(int month, int year);
         Task<IEnumerable<Product>> NewArrivals();
+        Task<IEnumerable<Product>> GetByCategory(string cate, string value, int page, int productPerPage);
+        Task<IEnumerable<Product>> GetByPrice(decimal min, decimal max, int page, int productPerPage);
+        Task<IEnumerable<Product>> GetProductByPage(int page, int productPerPage);
+        Task<IEnumerable<Product>> GetByCheckBox(List<string> value, int page, int productPerPage);
+        Task<IEnumerable<Product>> GetBySearch(string value, int page, int productPerPage);
         Task<Product> Add(Product product);
         Task<Product> Update(Product product);
         Task<Product> Delete(string id);

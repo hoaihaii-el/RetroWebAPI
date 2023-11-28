@@ -63,5 +63,41 @@ namespace RetroFootballAPI.Controllers
         {
             return Ok(await _repo.Delete(id));
         }
+
+        [HttpGet("top-selling/{month}/{year}")]
+        public async Task<IActionResult> TopSelling(int month, int year)
+        {
+            return Ok(await _repo.TopSelling(month, year));
+        }
+
+        [HttpGet("get-by-cate/{cate}/{value}/{page}/{productPerPage}")]
+        public async Task<IActionResult> GetByCate(string cate, string value, int page, int productPerPage)
+        {
+            return Ok(await _repo.GetByCategory(cate, value, page, productPerPage));
+        }
+
+        [HttpGet("get-by-price/{min}/{max}/{page}/{productPerPage}")]
+        public async Task<IActionResult> GetByPrice(decimal min, decimal max, int page, int productPerPage)
+        {
+            return Ok(await _repo.GetByPrice(min, max, page, productPerPage));
+        }
+
+        [HttpGet("get-all-by-page/{cate}/{value}/{page}/{productPerPage}")]
+        public async Task<IActionResult> GetAllByPage(int page, int productPerPage)
+        {
+            return Ok(await _repo.GetProductByPage(page, productPerPage));
+        }
+
+        [HttpGet("get-by-checkbox/{value}/{page}/{productPerPage}")]
+        public async Task<IActionResult> GetByCheckBox(List<string> value, int page, int productPerPage)
+        {
+            return Ok(await _repo.GetByCheckBox(value, page, productPerPage));
+        }
+
+        [HttpGet("get-by-search/{value}/{page}/{productPerPage}")]
+        public async Task<IActionResult> GetBySearch(string value, int page, int productPerPage)
+        {
+            return Ok(await _repo.GetBySearch(value, page, productPerPage));
+        }
     }
 }

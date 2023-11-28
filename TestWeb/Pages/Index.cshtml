@@ -12,7 +12,7 @@
 <script>
     document.getElementById("callAPI").addEventListener("click", function () {
         fetch("https://localhost:7030/api/Accounts/GoogleLogin", {
-            method: 'GET',
+            method: 'POST',
             withCredentials: true,
             crossorigin: true,
             mode: 'no-cors',
