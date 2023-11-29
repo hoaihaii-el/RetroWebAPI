@@ -44,6 +44,13 @@ namespace RetroFootballAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("logout")]
+        public IActionResult LogOut()
+        {
+            _repo.Logout();
+            return Ok();
+        }
+
         [AllowAnonymous]
         [HttpGet("GoogleLogin")]
         public IActionResult GoogleLogin()

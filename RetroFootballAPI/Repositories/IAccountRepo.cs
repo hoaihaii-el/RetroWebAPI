@@ -10,5 +10,6 @@ namespace RetroFootballAPI.Repositories
         Task<string> Login(Login user);
         AuthenticationProperties GoogleLogin(string redirectUri);
         Task<string> ExternalLoginResponse();
+        Task Logout();
     }
 }

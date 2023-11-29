@@ -162,5 +162,10 @@ namespace RetroFootballAPI.Services
 
             return string.Empty;
         }
+
+        public Task Logout()
+        {
+            return _signInManager.SignOutAsync();
+        }
     }
 }
