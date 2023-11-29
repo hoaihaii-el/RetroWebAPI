@@ -1,3 +1,5 @@
+using CloudinaryDotNet;
+using dotenv.net;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -10,6 +12,7 @@ using RetroFootballAPI.Middleware;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.Services;
+using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
 using System.Text;
 
@@ -58,17 +61,19 @@ namespace RetroFootballAPI
             builder.Services.AddScoped<IWishListRepo, WishListRepo>();
             builder.Services.AddScoped<IAccountRepo, AccountRepo>();
             builder.Services.AddScoped<IChatRepo, ChatRepo>();
+            builder.Services.AddScoped<IImageRepo, ImageRepo>();
+            builder.Services.AddSingleton<JWTManager>();
 
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddCookie(options =>
-            {
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.None;
-            })
+            //.AddCookie(options =>
+            //{
+            //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            //    options.Cookie.SameSite = SameSiteMode.None;
+            //})
             .AddJwtBearer(opts =>
             {
                 opts.SaveToken = true;
@@ -95,19 +100,29 @@ namespace RetroFootballAPI
                         return Task.CompletedTask;
                     }
                 };
-            })
-            .AddGoogle(options =>
-            {
-                options.ClientId = builder.Configuration["Authentication:Google:ClientID"];
-                options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-                options.SignInScheme = IdentityConstants.ExternalScheme;
             });
+            //.AddGoogle(options =>
+            //{
+            //    options.ClientId = builder.Configuration["Authentication:Google:ClientID"];
+            //    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+            //    options.SignInScheme = IdentityConstants.ExternalScheme;
+            //});
 
-            builder.Services.Configure<CookiePolicyOptions>(options =>
+            //builder.Services.Configure<CookiePolicyOptions>(options =>
+            //{
+            //    options.CheckConsentNeeded = context => true;
+            //    options.MinimumSameSitePolicy = SameSiteMode.None;
+            //    options.Secure = CookieSecurePolicy.Always;
+            //});
+
+            builder.Services.AddCors(options =>
             {
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-                options.Secure = CookieSecurePolicy.Always;
+                options.AddPolicy("CorsPolicy", x =>
+                {
+                    x.AllowAnyOrigin()
+                     .AllowAnyMethod()
+                     .AllowAnyHeader();
+                });
             });
 
             builder.Services.AddAuthorization(options =>
@@ -134,6 +149,8 @@ namespace RetroFootballAPI
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("CorsPolicy");
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
