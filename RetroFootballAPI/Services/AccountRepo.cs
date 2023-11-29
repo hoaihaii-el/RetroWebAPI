@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
+using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -16,17 +17,17 @@ namespace RetroFootballAPI.Services
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly IConfiguration _config;
+        private readonly JWTManager _JWTManager;
         private readonly DataContext _context;
 
         public AccountRepo(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            IConfiguration config,
+            JWTManager JWTManager,
             DataContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _config = config;
+            _JWTManager = JWTManager;
             _context = context;
         }
 
@@ -60,21 +61,7 @@ namespace RetroFootballAPI.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var authenKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["JWT:SecretKey"])
-                );
-
-            var token = new JwtSecurityToken(
-                issuer: _config["JWT:ValidIssuer"],
-                audience: _config["JWT:ValidAudience"],
-                expires: DateTime.Now.AddDays(7),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(
-                    authenKey, 
-                    SecurityAlgorithms.HmacSha256Signature)
-                );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return _JWTManager.GenerateToken(userLogged.Email);
         }
 
         public async Task<IdentityResult> Register(Register register)
@@ -114,29 +101,11 @@ namespace RetroFootballAPI.Services
 
             var email = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
 
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Email, email ?? ""),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            var authenKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["JWT:SecretKey"])
-                );
-
-            var token = new JwtSecurityToken(
-                issuer: _config["JWT:ValidIssuer"],
-                audience: _config["JWT:ValidAudience"],
-                expires: DateTime.Now.AddDays(7),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(
-                    authenKey,
-                    SecurityAlgorithms.HmacSha256Signature)
-                );
+            var token = _JWTManager.GenerateToken(email ?? "");
 
             if (result.Succeeded)
             {
-                return new JwtSecurityTokenHandler().WriteToken(token);
+                return token;
             }
 
             var user = new AppUser
@@ -156,7 +125,7 @@ namespace RetroFootballAPI.Services
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
-                    return new JwtSecurityTokenHandler().WriteToken(token);
+                    return token;
                 }
             }
 
