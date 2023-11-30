@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RetroFootballWeb.Repository;
 
@@ -11,9 +12,10 @@ using RetroFootballWeb.Repository;
 namespace RetroFootballAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231130163534_ReplaceIsHaveMediaByMedia")]
+    partial class ReplaceIsHaveMediaByMedia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -358,14 +360,14 @@ namespace RetroFootballAPI.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<int>("ContentType")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsCustomerSend")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsReaded")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Media")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ReadTime")
                         .HasColumnType("datetime2");

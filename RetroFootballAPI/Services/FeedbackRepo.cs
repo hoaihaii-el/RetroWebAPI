@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballWeb.Repository;
+using RetroFootballAPI.StaticService;
 
 namespace RetroFootballAPI.Services
 {
@@ -24,8 +25,7 @@ namespace RetroFootballAPI.Services
                 ProductID = feedbackVM.ProductID,
                 Comment = feedbackVM.Comment,
                 Point = feedbackVM.Point,
-                Date = feedbackVM.Date,
-                IsHaveMedia = feedbackVM.IsHaveMedia
+                Date = feedbackVM.Date
             };
 
             var customer = await _context.Customers.FindAsync(feedbackVM.CustomerID);
@@ -38,6 +38,7 @@ namespace RetroFootballAPI.Services
 
             feedback.Customer = customer;
             feedback.Product = product;
+            feedback.Media = await UploadImage.Instance.UploadAsync(feedbackVM.Media);
 
             _context.Feedbacks.Add(feedback);
 
@@ -75,6 +76,7 @@ namespace RetroFootballAPI.Services
 
             feedback.Comment = feedbackVM.Comment;
             feedback.Point = feedbackVM.Point;
+            feedback.Media = await UploadImage.Instance.UploadAsync(feedbackVM.Media);
 
             _context.Feedbacks.Update(feedback);
 

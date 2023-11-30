@@ -10,8 +10,7 @@ namespace RetroFootballAPI.Models
         public int? RoomID { get; set; }
         [MaxLength(1000), Required]
         public string? Content { get; set; }
-        [Required]
-        public int ContentType { get; set; }
+        public string? Media { get; set; }
         [Required]
         public DateTime SendTime { get; set; }
         public DateTime ReadTime { get; set; }

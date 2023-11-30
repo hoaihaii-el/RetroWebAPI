@@ -31,14 +31,14 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPost("new-feedback")]
-        public async Task<ActionResult> Add(FeedbackVM feedback)
+        public async Task<ActionResult> Add([FromForm]FeedbackVM feedback)
         {
             return Ok(await _repo.Add(feedback));
         }
 
 
         [HttpPut("update/{feedback}")]
-        public async Task<IActionResult> Update(FeedbackVM feedback)
+        public async Task<IActionResult> Update([FromForm]FeedbackVM feedback)
         {
             return Ok(await _repo.Update(feedback));
         }

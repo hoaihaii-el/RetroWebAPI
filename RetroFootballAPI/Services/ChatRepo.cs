@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RetroFootballAPI.Hubs;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
+using RetroFootballAPI.StaticService;
 using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
 using TableDependency.SqlClient;
@@ -22,7 +23,8 @@ namespace RetroFootballAPI.Services
         {
             var newRoom = new ChatRoom
             {
-                CustomerID = room.CustomerID,
+                RoomID = room.RoomID,
+                CustomerID = room.CustomerID
             };
 
             var customer = await _context.Customers.FindAsync(room.CustomerID);
@@ -46,7 +48,6 @@ namespace RetroFootballAPI.Services
             {
                 RoomID = message.RoomID,
                 Content = message.Content,
-                ContentType = message.ContentType,
                 SendTime = message.SendTime,
                 ReadTime = message.ReadTime,
                 IsReaded = message.IsReaded,
@@ -59,6 +60,8 @@ namespace RetroFootballAPI.Services
             {
                 throw new KeyNotFoundException();
             }
+
+            newMsg.Media = await UploadImage.Instance.UploadAsync(message.Media);
 
             _context.Messages.Add(newMsg);
             await _context.SaveChangesAsync();
@@ -94,7 +97,7 @@ namespace RetroFootballAPI.Services
         public async Task<IEnumerable<string>> GetAdminsId()
         {
             var roleAdminID = await _context.Roles
-                .Where(r => r.Name == "Admin")
+                .Where(r => r.Name.Contains("Admin"))
                 .Select(r => r.Id)
                 .FirstOrDefaultAsync();
 
