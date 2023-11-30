@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
+using RetroFootballAPI.ViewModels;
 
 namespace RetroFootballAPI.Controllers
 {
@@ -33,7 +34,14 @@ namespace RetroFootballAPI.Controllers
         [HttpGet("best-seller")]
         public async Task<IActionResult> GetBestSeller()
         {
-            return Ok(await _repo.BestSeller());
+            try
+            {
+                return Ok(await _repo.BestSeller());
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
 
@@ -52,7 +60,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPost("new-product")]
-        public async Task<IActionResult> Add(Product product)
+        public async Task<IActionResult> Add([FromForm]ProductVM product)
         {
             return Ok(await _repo.Add(product));
         }
@@ -82,7 +90,7 @@ namespace RetroFootballAPI.Controllers
             return Ok(await _repo.GetByPrice(min, max, page, productPerPage));
         }
 
-        [HttpGet("get-all-by-page/{cate}/{value}/{page}/{productPerPage}")]
+        [HttpGet("get-all-by-page/{page}/{productPerPage}")]
         public async Task<IActionResult> GetAllByPage(int page, int productPerPage)
         {
             return Ok(await _repo.GetProductByPage(page, productPerPage));

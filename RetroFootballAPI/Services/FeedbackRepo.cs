@@ -36,6 +36,9 @@ namespace RetroFootballAPI.Services
                 throw new KeyNotFoundException();
             }
 
+            feedback.Customer = customer;
+            feedback.Product = product;
+
             _context.Feedbacks.Add(feedback);
 
             await _context.SaveChangesAsync();
@@ -72,7 +75,6 @@ namespace RetroFootballAPI.Services
 
             feedback.Comment = feedbackVM.Comment;
             feedback.Point = feedbackVM.Point;
-            feedback.IsHaveMedia = feedbackVM.IsHaveMedia;
 
             _context.Feedbacks.Update(feedback);
 

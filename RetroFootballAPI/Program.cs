@@ -12,6 +12,7 @@ using RetroFootballAPI.Middleware;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.Services;
+using RetroFootballAPI.StaticService;
 using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
 using System.Text;
@@ -61,8 +62,9 @@ namespace RetroFootballAPI
             builder.Services.AddScoped<IWishListRepo, WishListRepo>();
             builder.Services.AddScoped<IAccountRepo, AccountRepo>();
             builder.Services.AddScoped<IChatRepo, ChatRepo>();
-            builder.Services.AddScoped<IImageRepo, ImageRepo>();
+
             builder.Services.AddSingleton<JWTManager>();
+            builder.Services.AddSingleton<UploadImage>();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -141,7 +143,6 @@ namespace RetroFootballAPI
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

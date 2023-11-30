@@ -11,7 +11,7 @@ namespace RetroFootballAPI.Models
         public string? Comment { get; set; } 
         public int Point {  get; set; }
         public DateTime Date { get; set; }
-        public bool IsHaveMedia { get; set; }
+        public string Media { get; set; } = "";
 
         // Đối tượng liên quan đến Customer
         public Customer? Customer { get; set; }

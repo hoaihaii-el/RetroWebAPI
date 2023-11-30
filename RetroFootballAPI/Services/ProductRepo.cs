@@ -2,6 +2,8 @@
 using RetroFootballAPI.Repositories;
 using RetroFootballWeb.Repository;
 using RetroFootballAPI.Models;
+using RetroFootballAPI.ViewModels;
+using RetroFootballAPI.StaticService;
 
 namespace RetroFootballAPI.Services
 {
@@ -15,8 +17,30 @@ namespace RetroFootballAPI.Services
         }
 
 
-        public async Task<Product> Add(Product product)
+        public async Task<Product> Add(ProductVM productVM)
         {
+            var product = new Product
+            {
+                ID = productVM.ID,
+                Name = productVM.Name,
+                Club = productVM.Club,
+                Nation = productVM.Nation,
+                Season = productVM.Season,
+                Price = productVM.Price,
+                SizeS = productVM.SizeS,
+                SizeM = productVM.SizeM,
+                SizeL = productVM.SizeL,
+                SizeXL = productVM.SizeXL,
+                Status = productVM.Status,
+                TimeAdded = DateTime.Now,
+                Description = productVM.Description,
+                Point = productVM.Point,
+                UrlMain = await UploadImage.Instance.UploadAsync(productVM.UrlMain),
+                UrlSub1 = await UploadImage.Instance.UploadAsync(productVM.UrlSub1),
+                UrlSub2 = await UploadImage.Instance.UploadAsync(productVM.UrlSub2),
+                UrlThumb = await UploadImage.Instance.UploadAsync(productVM.UrlThumb)
+            };
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
@@ -62,6 +86,11 @@ namespace RetroFootballAPI.Services
                 .OrderByDescending(x => x.Total)
                 .Take(3)
                 .ToList();
+
+            if (productIDs.Count < 1)
+            {
+                throw new ArgumentNullException("Not selling yet!");
+            }
 
             while (productIDs.Count < 3)
             {
@@ -134,19 +163,22 @@ namespace RetroFootballAPI.Services
             if (cate.Equals("Club", StringComparison.OrdinalIgnoreCase))
             {
                 products = await _context.Products
-                    .Where(p => p.Club.Equals(value, StringComparison.OrdinalIgnoreCase))
+                    .Where(p => p.Club == value)
                     .ToListAsync();
             }
             else
             if (cate.Equals("Nation", StringComparison.OrdinalIgnoreCase))
             {
                 products = await _context.Products
-                    .Where(p => p.Nation.Equals(value, StringComparison.OrdinalIgnoreCase))
+                    .Where(p => p.Nation == value)
                     .ToListAsync();
             }
-            products = await _context.Products
-                    .Where(p => p.Season.Equals(value, StringComparison.OrdinalIgnoreCase))
+            else
+            {
+                products = await _context.Products
+                    .Where(p => p.Season == value)
                     .ToListAsync();
+            }
 
             return products
                 .Skip((page - 1) * productPerPage)
@@ -182,7 +214,7 @@ namespace RetroFootballAPI.Services
         public async Task<IEnumerable<Product>> GetBySearch(string value, int page, int productPerPage)
         {
             return await _context.Products
-                .Where(p => p.Name.Contains(value, StringComparison.OrdinalIgnoreCase))
+                .Where(p => p.Name.ToLower().Contains(value.ToLower()))
                 .Skip((page - 1) * productPerPage)
                 .Take(productPerPage)
                 .ToListAsync();

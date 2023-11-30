@@ -13,12 +13,11 @@
         public int SizeL { get; set; }
         public int SizeXL { get; set; }
         public string? Status { get; set; }
-        public DateTime TimeAdded { get; set; }
         public string? Description { get; set; }
         public double Point { get; set; }
-        public string? UrlMain { get; set; }
-        public string? UrlSub1 { get; set; }
-        public string? UrlSub2 { get; set; }
-        public string? UrlThumb { get; set; }
+        public IFormFile? UrlMain { get; set; }
+        public IFormFile? UrlSub1 { get; set; }
+        public IFormFile? UrlSub2 { get; set; }
+        public IFormFile? UrlThumb { get; set; }
     }
 }

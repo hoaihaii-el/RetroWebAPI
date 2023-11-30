@@ -1,5 +1,6 @@
 ﻿using Humanizer.Localisation.TimeToClockNotation;
 using RetroFootballAPI.Models;
+using RetroFootballAPI.ViewModels;
 
 namespace RetroFootballAPI.Repositories
 {
@@ -15,7 +16,7 @@ namespace RetroFootballAPI.Repositories
         Task<IEnumerable<Product>> GetProductByPage(int page, int productPerPage);
         Task<IEnumerable<Product>> GetByCheckBox(List<string> value, int page, int productPerPage);
         Task<IEnumerable<Product>> GetBySearch(string value, int page, int productPerPage);
-        Task<Product> Add(Product product);
+        Task<Product> Add(ProductVM product);
         Task<Product> Update(Product product);
         Task<Product> Delete(string id);
     }
