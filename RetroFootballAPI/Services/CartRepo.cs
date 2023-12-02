@@ -17,6 +17,16 @@ namespace RetroFootballAPI.Services
 
         public async Task<Cart> AddToCart(CartVM cart)
         {
+            var model = await _context.Carts.FindAsync(cart.CustomerID, cart.ProductID, cart.Size);
+
+            if (model != null)
+            {
+                model.Quantity += cart.Quantity;
+                _context.Carts.Update(model);
+                await _context.SaveChangesAsync();
+                return model;
+            }
+
             var item = new Cart
             {
                 CustomerID = cart.CustomerID,
@@ -82,17 +92,18 @@ namespace RetroFootballAPI.Services
 
         public async Task<decimal> GetCartTotal(string customerID)
         {
-            return await _context.Carts.
-                Where(c => c.CustomerID == customerID).
-                Select(c => c.Product.Price).
-                SumAsync();
+            return await _context.Carts
+                .Where(c => c.CustomerID == customerID)
+                .Select(c => c.Product.Price * c.Quantity)
+                .SumAsync();
         }
 
         public async Task<int> GetTotalItems(string customerID)
         {
-            return await _context.Carts.
-                Where(c => c.CustomerID == customerID).
-                CountAsync();
+            return await _context.Carts
+                .Where(c => c.CustomerID == customerID)
+                .Select(c => c.Quantity)
+                .SumAsync();
         }
 
 

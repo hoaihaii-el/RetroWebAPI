@@ -109,14 +109,6 @@ namespace RetroFootballAPI
                 });
             });
 
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminRole",
-                    policy => policy.RequireRole("Administrator"));
-
-
-            });
-
             builder.Services.AddSignalR();
 
             builder.Services.AddControllers();

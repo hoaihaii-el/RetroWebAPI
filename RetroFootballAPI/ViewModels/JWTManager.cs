@@ -15,7 +15,7 @@ namespace RetroFootballAPI.ViewModels
             _config = config;
         }
 
-        public string GenerateToken(string email)
+        public string GenerateToken(string email, string role)
         {
             if (string.IsNullOrEmpty(email))
             {
@@ -27,6 +27,11 @@ namespace RetroFootballAPI.ViewModels
                 new Claim(ClaimTypes.Email, email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
+            if (!string.IsNullOrEmpty(role))
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var authenKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_config["JWT:SecretKey"])

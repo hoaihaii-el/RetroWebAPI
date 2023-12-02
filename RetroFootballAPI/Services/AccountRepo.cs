@@ -1,16 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualBasic;
-using Microsoft.Win32;
+﻿using Microsoft.AspNetCore.Identity;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace RetroFootballAPI.Services
 {
@@ -18,62 +10,90 @@ namespace RetroFootballAPI.Services
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWTManager _JWTManager;
         private readonly DataContext _context;
 
-        public AccountRepo(UserManager<AppUser> userManager,
+        public AccountRepo(
+            UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             JWTManager JWTManager,
-            DataContext context)
+            DataContext context,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _JWTManager = JWTManager;
             _context = context;
+            _roleManager = roleManager;
         }
 
 
-        public async Task<string> Login(Login user)
+        public async Task<string> Login(Login login)
         {
-            var result = await _signInManager.PasswordSignInAsync(
-                user.UserName,
-                user.Password,
-                false,
-                false
-                );
+            var user = await _userManager.FindByEmailAsync(login.Email);
 
-            if (!result.Succeeded)
+            if (user == null)
+            {
+                throw new ArgumentNullException("User not found");
+            }
+
+            var passwordValid = await _userManager.CheckPasswordAsync(user, login.Password);
+
+            if (!passwordValid)
             {
                 return string.Empty;
             }
 
-            var userLogged = await _context.Users
-                .Where(u => u.UserName == user.UserName)
-                .FirstOrDefaultAsync();
+            var userRoles = await _userManager.GetRolesAsync(user);
 
-            if (userLogged == null) 
-            { 
-                return string.Empty;
-            }
-
-            return _JWTManager.GenerateToken(userLogged.Email);
+            return _JWTManager.GenerateToken(user.Email, userRoles.FirstOrDefault() ?? "");
         }
 
-        public async Task<IdentityResult> Register(Register register)
+        public async Task<CustomerVM> Register(Register register)
         {
             var user = new AppUser
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = register.UserName,
-                Email = register.Email
+                Email = register.Email,
+                PhoneNumber = register.Phone
             };
 
-            return await _userManager.CreateAsync(user, register.Password);
+            var customer = new Customer
+            {
+                ID = user.Id,
+                Name = user.UserName,
+                Phone = user.PhoneNumber
+            };
+
+            _context.Customers.Add(customer);
+
+            await _context.SaveChangesAsync();
+
+            await _userManager.CreateAsync(user, register.Password);
+
+            if (!await _roleManager.RoleExistsAsync(AppRole.Customer))
+            {
+                await _roleManager.CreateAsync(
+                    new IdentityRole(AppRole.Customer)
+                );
+            }
+
+            await _userManager.AddToRoleAsync(user, AppRole.Customer);
+
+            return new CustomerVM
+            {
+                ID = user.Id,
+                Name = user.UserName,
+                Email = user.Email,
+                Phone = user.PhoneNumber
+            };
         }
 
-        public Task Logout()
+        public async Task Logout()
         {
-            return _signInManager.SignOutAsync();
+            await _signInManager.SignOutAsync();
         }
 
         public async Task<string> LoginByGoogle(string email)
@@ -82,7 +102,7 @@ namespace RetroFootballAPI.Services
 
             if (user != null)
             {
-                return string.Empty;
+                return _JWTManager.GenerateToken(email, AppRole.Customer);
             }
 
             var newUser = new AppUser
@@ -94,7 +114,30 @@ namespace RetroFootballAPI.Services
 
             await _userManager.CreateAsync(newUser);
 
-            return _JWTManager.GenerateToken(email);
+            await _userManager.AddToRoleAsync(newUser, AppRole.Customer);
+
+            return _JWTManager.GenerateToken(email, AppRole.Customer);
+        }
+
+        public async Task NewAdminAccount(Register register)
+        {
+            var admin = new AppUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = register.UserName,
+                Email = register.Email
+            };
+
+            await _userManager.CreateAsync(admin, register.Password);
+
+            if (!await _roleManager.RoleExistsAsync(AppRole.Admin))
+            {
+                await _roleManager.CreateAsync(
+                    new IdentityRole(AppRole.Admin)
+                );
+            }
+
+            await _userManager.AddToRoleAsync(admin, AppRole.Admin);
         }
     }
 }

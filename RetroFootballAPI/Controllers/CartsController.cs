@@ -20,7 +20,7 @@ namespace RetroFootballAPI.Controllers
         [HttpGet("{customerID}")]
         public async Task<IActionResult> GetCarts(string customerID)
         {
-            return Ok (await _repo.GetCarts(customerID));
+            return Ok(await _repo.GetCarts(customerID));
         }
 
 
@@ -41,14 +41,12 @@ namespace RetroFootballAPI.Controllers
         [HttpPost("add-to-cart")]
         public async Task<IActionResult> AddToCart(CartVM cart)
         {
-            try
+            if (cart.Quantity < 1 || !CartVM.ProductSize.Contains(cart.Size ?? ""))
             {
-                return Ok(await _repo.AddToCart(cart));
+                return BadRequest();
             }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+
+            return Ok(await _repo.AddToCart(cart));
         }
 
 
@@ -77,7 +75,9 @@ namespace RetroFootballAPI.Controllers
         public async Task<IActionResult> ClearCart(string customerID)
         {
             await _repo.ClearCart(customerID);
-            return Ok(new { success = true });
+            return Ok(
+                new { success = true }
+            );
         }
     }
 }
