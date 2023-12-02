@@ -9,7 +9,6 @@
         public string? PayMethod { get; set; }
         public DateTime DeliveryDate { get; set; }
         public string? DeliveryMethod { get; set; }
-        public string Status { get; set; } = "Pending";
         public string? Note { get; set; }
     }
 }

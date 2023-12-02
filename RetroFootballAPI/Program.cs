@@ -71,11 +71,6 @@ namespace RetroFootballAPI
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            //.AddCookie(options =>
-            //{
-            //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            //    options.Cookie.SameSite = SameSiteMode.None;
-            //})
             .AddJwtBearer(opts =>
             {
                 opts.SaveToken = true;
@@ -103,19 +98,6 @@ namespace RetroFootballAPI
                     }
                 };
             });
-            //.AddGoogle(options =>
-            //{
-            //    options.ClientId = builder.Configuration["Authentication:Google:ClientID"];
-            //    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-            //    options.SignInScheme = IdentityConstants.ExternalScheme;
-            //});
-
-            //builder.Services.Configure<CookiePolicyOptions>(options =>
-            //{
-            //    options.CheckConsentNeeded = context => true;
-            //    options.MinimumSameSitePolicy = SameSiteMode.None;
-            //    options.Secure = CookieSecurePolicy.Always;
-            //});
 
             builder.Services.AddCors(options =>
             {
@@ -162,6 +144,8 @@ namespace RetroFootballAPI
             app.MapControllers();
 
             app.MapHub<ChatHub>("/chathub");
+
+            app.MapHub<OrderStatusHub>("/orderstatushub");
 
             app.Run();
         }

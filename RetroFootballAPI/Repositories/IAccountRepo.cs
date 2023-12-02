@@ -8,8 +8,7 @@ namespace RetroFootballAPI.Repositories
     {
         Task<IdentityResult> Register(Register user);
         Task<string> Login(Login user);
-        AuthenticationProperties GoogleLogin(string redirectUri);
-        Task<string> ExternalLoginResponse();
+        Task<string> LoginByGoogle(string email);
         Task Logout();
     }
 }

@@ -1,17 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using RetroFootballAPI.Models;
-using RetroFootballAPI.ViewModels;
 using System.Security.Claims;
 
 namespace RetroFootballAPI.Hubs
 {
-    public class ChatHub : Hub
+    public class OrderStatusHub : Hub
     {
         public static Dictionary<string, string> userConnections = new Dictionary<string, string>();
         private readonly UserManager<AppUser> _userManager;
 
-        public ChatHub(UserManager<AppUser> userManager)
+        public OrderStatusHub(UserManager<AppUser> userManager)
         {
             _userManager = userManager;
         }

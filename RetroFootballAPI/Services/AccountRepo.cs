@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
+using Microsoft.Win32;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
@@ -55,12 +56,6 @@ namespace RetroFootballAPI.Services
                 return string.Empty;
             }
 
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Email, userLogged.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
             return _JWTManager.GenerateToken(userLogged.Email);
         }
 
@@ -76,65 +71,30 @@ namespace RetroFootballAPI.Services
             return await _userManager.CreateAsync(user, register.Password);
         }
 
-        public AuthenticationProperties GoogleLogin(string redirectUri)
+        public Task Logout()
         {
-            return _signInManager
-                .ConfigureExternalAuthenticationProperties("Google", redirectUri);
+            return _signInManager.SignOutAsync();
         }
 
-        public async Task<string> ExternalLoginResponse()
+        public async Task<string> LoginByGoogle(string email)
         {
-            var info = await _signInManager
-                .GetExternalLoginInfoAsync();
+            var user = await _userManager.FindByEmailAsync(email);
 
-            if (info == null)
+            if (user != null)
             {
                 return string.Empty;
             }
 
-            var result = await _signInManager
-                .ExternalLoginSignInAsync(
-                    info.LoginProvider, 
-                    info.ProviderKey, 
-                    false
-                );
-
-            var email = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
-
-            var token = _JWTManager.GenerateToken(email ?? "");
-
-            if (result.Succeeded)
-            {
-                return token;
-            }
-
-            var user = new AppUser
+            var newUser = new AppUser
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = email,
                 Email = email
             };
 
-            var create = await _userManager.CreateAsync(user);
+            await _userManager.CreateAsync(newUser);
 
-            if (create.Succeeded)
-            {
-                var login = await _userManager.AddLoginAsync(user, info);
-
-                if (login.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-
-                    return token;
-                }
-            }
-
-            return string.Empty;
-        }
-
-        public Task Logout()
-        {
-            return _signInManager.SignOutAsync();
+            return _JWTManager.GenerateToken(email);
         }
     }
 }

@@ -11,9 +11,9 @@ namespace RetroFootballAPI.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderRepo _repo;
-        private readonly IHubContext<ChatHub> _hub;
+        private readonly IHubContext<OrderStatusHub> _hub;
 
-        public OrdersController(IOrderRepo repo, IHubContext<ChatHub> hub)
+        public OrdersController(IOrderRepo repo, IHubContext<OrderStatusHub> hub)
         {
             _repo = repo;
             _hub = hub;
@@ -60,9 +60,9 @@ namespace RetroFootballAPI.Controllers
         {
             var order = await _repo.UpdateStatus(orderID);
 
-            if (ChatHub.userConnections.ContainsKey(order.CustomerID ?? ""))
+            if (OrderStatusHub.userConnections.ContainsKey(order.CustomerID ?? ""))
             {
-                await _hub.Clients.Client(ChatHub.userConnections[order.CustomerID ?? ""])
+                await _hub.Clients.Client(OrderStatusHub.userConnections[order.CustomerID ?? ""])
                         .SendAsync("ReceiveMessage", order);
             }
 

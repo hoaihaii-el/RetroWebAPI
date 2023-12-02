@@ -4,8 +4,6 @@ namespace RetroFootballAPI.Models
 {
     public class Register
     {
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "Enter your Username!")]
         public string? UserName { get; set; }
 

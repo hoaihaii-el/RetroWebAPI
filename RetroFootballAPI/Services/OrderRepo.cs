@@ -26,7 +26,7 @@ namespace RetroFootballAPI.Services
                 PayMethod = orderVM.PayMethod,
                 DeliveryDate = orderVM.DeliveryDate,
                 DeliveryMethod = orderVM.DeliveryMethod,
-                Status = orderVM.Status,
+                Status = "Payment"
             };
 
             var customer = await _context.Customers.FindAsync(orderVM.CustomerID);
@@ -148,6 +148,7 @@ namespace RetroFootballAPI.Services
 
             var status = new List<string>
             {
+                "Payment",
                 "Pending",
                 "Packaging",
                 "Delivering",
