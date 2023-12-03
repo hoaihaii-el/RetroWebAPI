@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using RetroFootballAPI.Hubs;
+﻿using Microsoft.EntityFrameworkCore;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.StaticService;
 using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
-using TableDependency.SqlClient;
-using TableDependency.SqlClient.Base.EventArgs;
 
 namespace RetroFootballAPI.Services
 {
@@ -23,7 +19,6 @@ namespace RetroFootballAPI.Services
         {
             var newRoom = new ChatRoom
             {
-                RoomID = room.RoomID,
                 CustomerID = room.CustomerID
             };
 
@@ -46,21 +41,22 @@ namespace RetroFootballAPI.Services
         {
             var newMsg = new Message
             {
-                RoomID = message.RoomID,
                 Content = message.Content,
-                SendTime = message.SendTime,
-                ReadTime = message.ReadTime,
-                IsReaded = message.IsReaded,
+                SendTime = DateTime.Now,
+                IsReaded = false,
                 IsCustomerSend = message.IsCustomerSend,
             };
 
-            var room = await _context.ChatRooms.FindAsync(newMsg.RoomID);
+            var room = await _context.ChatRooms
+                .Where(m => m.CustomerID == message.CustomerID)
+                .FirstOrDefaultAsync();
 
             if (room == null)
             {
                 throw new KeyNotFoundException();
             }
 
+            newMsg.Room = room;
             newMsg.Media = await UploadImage.Instance.UploadAsync(message.Media);
 
             _context.Messages.Add(newMsg);
@@ -75,7 +71,7 @@ namespace RetroFootballAPI.Services
 
             if (message == null)
             {
-                throw new KeyNotFoundException();   
+                throw new KeyNotFoundException();
             }
 
             message.ReadTime = DateTime.Now;

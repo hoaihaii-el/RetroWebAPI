@@ -27,7 +27,7 @@ namespace RetroFootballAPI.Controllers
                 case "Season":
                     return Ok(await _repo.GetSeasons());
                 default:
-                    return StatusCode(StatusCodes.Status500InternalServerError);
+                    return NotFound();
             }
         }
     }

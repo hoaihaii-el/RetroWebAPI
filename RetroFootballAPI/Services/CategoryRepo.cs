@@ -17,7 +17,7 @@ namespace RetroFootballAPI.Services
         public async Task<IEnumerable<CategoryVM>> GetClubs()
         {
             return await _context.Products
-                .Where(p => p.Club != null)
+                .Where(p => p.Club != "" && p.Club != "None")
                 .Select(p => new CategoryVM
                 {
                     Value = p.Club,
@@ -29,7 +29,7 @@ namespace RetroFootballAPI.Services
         public async Task<IEnumerable<CategoryVM>> GetNations()
         {
             return await _context.Products
-                .Where(p => p.Nation != null)
+                .Where(p => p.Nation != "" && p.Nation != "None")
                 .Select(p => new CategoryVM
                 {
                     Value = p.Nation,
@@ -41,6 +41,7 @@ namespace RetroFootballAPI.Services
         public async Task<IEnumerable<CategoryVM>> GetSeasons()
         {
             return await _context.Products
+                .Where(p => p.Season != "None")
                 .Select(p => new CategoryVM
                 {
                     Value = p.Season,

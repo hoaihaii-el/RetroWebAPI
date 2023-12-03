@@ -33,13 +33,13 @@ namespace RetroFootballAPI.Controllers
         }
 
         [HttpPost("send-message")]
-        public async Task<IActionResult> SendMessage(MessageVM message, string userID)
+        public async Task<IActionResult> SendMessage([FromForm]MessageVM message)
         {
             if (!message.IsCustomerSend)
             {
-                if (ChatHub.userConnections.ContainsKey(userID))
+                if (ChatHub.userConnections.ContainsKey(message.CustomerID))
                 {
-                    await _hub.Clients.Client(ChatHub.userConnections[userID])
+                    await _hub.Clients.Client(ChatHub.userConnections[message.CustomerID])
                         .SendAsync("ReceiveMessage", message);
                 }
             }
