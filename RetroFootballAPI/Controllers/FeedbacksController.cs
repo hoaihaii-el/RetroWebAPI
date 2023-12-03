@@ -37,7 +37,7 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpPut("update/{feedback}")]
+        [HttpPut("update")]
         public async Task<IActionResult> Update([FromForm]FeedbackVM feedback)
         {
             return Ok(await _repo.Update(feedback));

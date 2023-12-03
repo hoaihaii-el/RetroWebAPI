@@ -45,10 +45,10 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpPut("update/{info}")]
-        public async Task<IActionResult> UpdateCustomer(DeliveryInfoVM info)
+        [HttpPut("update/{pri}")]
+        public async Task<IActionResult> UpdateCustomer(DeliveryInfoVM info, int pri)
         {
-            return Ok(await _repo.Update(info));
+            return Ok(await _repo.Update(info, pri));
         }
 
 

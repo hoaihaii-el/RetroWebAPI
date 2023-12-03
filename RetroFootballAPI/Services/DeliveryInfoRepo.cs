@@ -17,10 +17,16 @@ namespace RetroFootballAPI.Services
 
         public async Task<DeliveryInfo> Add(DeliveryInfoVM info)
         {
+            var priority = await _context.DeliveryInfos
+                .Select(x => x.Priority)
+                .MaxAsync() + 1;
+
+            if (priority < 1) priority = 1;
+
             var deliInfo = new DeliveryInfo
             {
                 CustomerID = info.CustomerID,
-                Priority = info.Priority,
+                Priority = priority,
                 Name = info.Name,
                 Address = info.Address,
                 Phone = info.Phone
@@ -92,25 +98,33 @@ namespace RetroFootballAPI.Services
                 return info;
             }
 
-            defaultInfo.Priority = priority;
-            info.Priority = 1;
+            var temp = defaultInfo.Name;
+            defaultInfo.Name = info.Name;
+            info.Name = temp;
+
+            temp = defaultInfo.Address;
+            defaultInfo.Address= info.Address;
+            info.Address = temp;
+
+            temp = defaultInfo.Phone;
+            defaultInfo.Phone = info.Phone;
+            info.Phone = temp;
 
             await _context.SaveChangesAsync();
 
-            return info;
+            return defaultInfo;
         }
 
-        public async Task<DeliveryInfo> Update(DeliveryInfoVM infoVM)
+        public async Task<DeliveryInfo> Update(DeliveryInfoVM infoVM, int pri)
         {
             var info = await _context.DeliveryInfos
-                .FindAsync(infoVM.CustomerID, infoVM.Priority);
+                .FindAsync(infoVM.CustomerID, pri);
 
             if (info == null)
             {
                 throw new KeyNotFoundException();
             }
 
-            info.Priority = infoVM.Priority;
             info.Name = infoVM.Name;
             info.Address = infoVM.Address;
             info.Phone = infoVM.Phone;

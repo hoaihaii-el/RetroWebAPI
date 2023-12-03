@@ -25,7 +25,7 @@ namespace RetroFootballAPI.Services
                 ProductID = feedbackVM.ProductID,
                 Comment = feedbackVM.Comment,
                 Point = feedbackVM.Point,
-                Date = feedbackVM.Date
+                Date = DateTime.Now
             };
 
             var customer = await _context.Customers.FindAsync(feedbackVM.CustomerID);

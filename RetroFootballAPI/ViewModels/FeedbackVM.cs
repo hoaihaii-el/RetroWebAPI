@@ -6,7 +6,6 @@
         public string? ProductID { get; set; }
         public string? Comment { get; set; }
         public int Point { get; set; }
-        public DateTime Date { get; set; }
         public IFormFile? Media { get; set; }
     }
 }

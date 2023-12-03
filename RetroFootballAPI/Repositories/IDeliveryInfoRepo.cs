@@ -9,7 +9,7 @@ namespace RetroFootballAPI.Repositories
         Task<DeliveryInfo> GetByID(string customerID, int priority);
         Task<DeliveryInfo> SetDefault(string customerID, int priority);
         Task<DeliveryInfo> Add(DeliveryInfoVM info);
-        Task<DeliveryInfo> Update(DeliveryInfoVM info);
+        Task<DeliveryInfo> Update(DeliveryInfoVM info, int pri);
         Task<DeliveryInfo> Delete(string customerID, int priority);
     }
 }
