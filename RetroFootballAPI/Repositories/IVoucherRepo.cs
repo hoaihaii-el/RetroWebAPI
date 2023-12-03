@@ -1,10 +1,11 @@
 ﻿using RetroFootballAPI.Models;
+using RetroFootballAPI.ViewModels;
 
 namespace RetroFootballAPI.Repositories
 {
     public interface IVoucherRepo
     {
-        Task<Voucher> Add(Voucher voucher);
+        Task<Voucher> Add(VoucherVM voucher, List<string> productsApplied);
         Task<Voucher> Update(Voucher voucher);
         Task<Voucher> Delete(string voucherID);
         Task<IEnumerable<Voucher>> GetAll();

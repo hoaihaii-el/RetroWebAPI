@@ -96,8 +96,8 @@ namespace RetroFootballAPI.Controllers
             return Ok(await _repo.GetProductByPage(page, productPerPage));
         }
 
-        [HttpGet("get-by-checkbox/{value}/{page}/{productPerPage}")]
-        public async Task<IActionResult> GetByCheckBox(List<string> value, int page, int productPerPage)
+        [HttpGet("get-by-checkbox/{page}/{productPerPage}")]
+        public async Task<IActionResult> GetByCheckBox([FromQuery]List<string> value, int page, int productPerPage)
         {
             return Ok(await _repo.GetByCheckBox(value, page, productPerPage));
         }

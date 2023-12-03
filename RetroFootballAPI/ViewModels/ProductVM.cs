@@ -2,7 +2,6 @@
 {
     public class ProductVM
     {
-        public string? ID { get; set; }
         public string? Name { get; set; }
         public string? Club { get; set; }
         public string? Nation { get; set; }

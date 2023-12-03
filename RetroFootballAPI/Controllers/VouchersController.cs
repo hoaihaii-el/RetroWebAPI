@@ -1,6 +1,7 @@
 ﻿using RetroFootballAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using RetroFootballAPI.Repositories;
+using RetroFootballAPI.ViewModels;
 
 namespace RetroFootballAPI.Controllers
 {
@@ -36,6 +37,12 @@ namespace RetroFootballAPI.Controllers
             return Ok(await _repo.GetById(voucherID));
         }
 
+        [HttpGet("get-voucher-applied/{productID}")]
+        public async Task<IActionResult> GetVoucherApplied(string productID)
+        {
+            return Ok(await _repo.GetVoucherApplied(productID));
+        }
+
 
         [HttpPut("update/{voucher}")]
         public async Task<IActionResult> Update(Voucher voucher)
@@ -45,9 +52,9 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPost("new-voucher")]
-        public async Task<IActionResult> Add(Voucher voucher)
+        public async Task<IActionResult> Add(VoucherVM voucher, [FromQuery] List<string> productsApplied)
         {
-            return Ok(await _repo.Add(voucher));
+            return Ok(await _repo.Add(voucher, productsApplied));
         }
 
 

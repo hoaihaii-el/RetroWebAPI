@@ -4,6 +4,7 @@ using RetroFootballWeb.Repository;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.ViewModels;
 using RetroFootballAPI.StaticService;
+using System.Text.RegularExpressions;
 
 namespace RetroFootballAPI.Services
 {
@@ -21,7 +22,7 @@ namespace RetroFootballAPI.Services
         {
             var product = new Product
             {
-                ID = productVM.ID,
+                ID = await AutoID(),
                 Name = productVM.Name,
                 Club = productVM.Club,
                 Nation = productVM.Nation,
@@ -128,7 +129,7 @@ namespace RetroFootballAPI.Services
         public async Task<IEnumerable<Product>> NewArrivals()
         {
             var products = _context.Products
-                .OrderBy(p => p.TimeAdded)
+                .OrderByDescending(p => p.TimeAdded)
                 .Take(3)
                 .ToListAsync();
 
@@ -204,11 +205,19 @@ namespace RetroFootballAPI.Services
 
         public async Task<IEnumerable<Product>> GetByCheckBox(List<string> value, int page, int productPerPage)
         {
-            return await _context.Products
-                .Where(p => value.Any(x => p.Name.Contains(x)))
-                .Skip((page - 1) * productPerPage)
-                .Take(productPerPage)
-                .ToListAsync();
+            var products = await _context.Products.ToListAsync();
+
+            var result = new List<Product>();
+
+            foreach (var item in products)
+            {
+                if (value.Any(x => item.Name.Contains(x)))
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result;
         }
 
         public async Task<IEnumerable<Product>> GetBySearch(string value, int page, int productPerPage)
@@ -218,6 +227,34 @@ namespace RetroFootballAPI.Services
                 .Skip((page - 1) * productPerPage)
                 .Take(productPerPage)
                 .ToListAsync();
+        }
+
+        private async Task<string> AutoID()
+        {
+            var ID = "PD0001";
+
+            var maxID = await _context.Products
+                .OrderByDescending(v => v.ID)
+                .Select(v => v.ID)
+                .FirstOrDefaultAsync();
+
+            if (maxID == null)
+            {
+                return ID;
+            }
+
+            ID = "PD";
+
+            var numeric = Regex.Match(maxID, @"\d+").Value;
+
+            numeric = (int.Parse(numeric) + 1).ToString();
+
+            while (ID.Length + numeric.Length < 6)
+            {
+                ID += '0';
+            }
+
+            return ID + numeric;
         }
     }
 }

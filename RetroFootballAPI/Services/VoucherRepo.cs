@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
+using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
+using System.Text.RegularExpressions;
 
 namespace RetroFootballAPI.Services
 {
@@ -14,9 +17,29 @@ namespace RetroFootballAPI.Services
             _context = context;
         }
 
-        public async Task<Voucher> Add(Voucher voucher)
+        public async Task<Voucher> Add(VoucherVM model, List<string> productsApplied)
         {
+            var voucher = new Voucher()
+            {
+                ID = await AutoID(),
+                Name = model.Name,
+                DateBegin = model.DateBegin,
+                DateEnd = model.DateEnd,
+                Value = model.Value
+            };
+
             _context.Voucher.Add(voucher);
+            await _context.SaveChangesAsync();
+
+            foreach (var productID in productsApplied)
+            {
+                _context.VoucherApplied.Add(new VoucherApplied
+                {
+                    VoucherID = voucher.ID,
+                    ProductID = productID
+                });
+            }
+
             await _context.SaveChangesAsync();
 
             return voucher;
@@ -67,6 +90,7 @@ namespace RetroFootballAPI.Services
         {
             var vouchers = await _context.VoucherApplied
                 .Where(v => v.ProductID == productID)
+                .Select(v => v.VoucherID)
                 .ToListAsync();
 
             var maxVoucher = new Voucher();
@@ -95,6 +119,34 @@ namespace RetroFootballAPI.Services
             await _context.SaveChangesAsync();
 
             return voucher;
+        }
+
+        private async Task<string> AutoID()
+        {
+            var ID = "VC0001";
+
+            var maxID = await _context.Voucher
+                .OrderByDescending(v => v.ID)
+                .Select(v => v.ID)
+                .FirstOrDefaultAsync();
+
+            if (maxID == null)
+            {
+                return ID;
+            }
+
+            ID = "VC";
+
+            var numeric = Regex.Match(maxID, @"\d+").Value;
+
+            numeric = (int.Parse(numeric) + 1).ToString();
+
+            while (ID.Length + numeric.Length < 6)
+            {
+                ID += '0';
+            }
+
+            return ID + numeric;
         }
     }
 }
