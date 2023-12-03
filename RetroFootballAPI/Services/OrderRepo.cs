@@ -19,13 +19,13 @@ namespace RetroFootballAPI.Services
         {
             var order = new Order
             {
-                ID = orderVM.ID,
                 CustomerID = orderVM.CustomerID,
                 TimeCreate = orderVM.TimeCreate,
                 Value = orderVM.Value,
                 PayMethod = orderVM.PayMethod,
                 DeliveryDate = orderVM.DeliveryDate,
                 DeliveryMethod = orderVM.DeliveryMethod,
+                Note = orderVM.Note,
                 Status = "Payment"
             };
 
@@ -120,13 +120,13 @@ namespace RetroFootballAPI.Services
             if (status == "All")
             {
                 return await _context.Orders
-                    .Where(o => o.TimeCreate == DateTime.Now)
+                    .Where(o => o.TimeCreate.Date == DateTime.Now.Date)
                     .ToListAsync();
             }
             else
             {
                 return await _context.Orders
-                    .Where(o => o.TimeCreate == DateTime.Now &&
+                    .Where(o => o.TimeCreate.Date == DateTime.Now.Date &&
                                 o.Status == status)
                     .ToListAsync();
             }

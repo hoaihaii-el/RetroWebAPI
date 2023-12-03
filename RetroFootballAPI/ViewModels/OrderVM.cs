@@ -2,7 +2,6 @@
 {
     public class OrderVM
     {
-        public int ID { get; set; }
         public string? CustomerID { get; set; }
         public DateTime TimeCreate { get; set; }
         public decimal Value { get; set; }
