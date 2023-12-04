@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using RetroFootballAPI.Hubs;
@@ -9,6 +10,7 @@ namespace RetroFootballAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class ChatController : ControllerBase
     {
         private readonly IHubContext<ChatHub> _hub;
@@ -21,19 +23,22 @@ namespace RetroFootballAPI.Controllers
         }
 
         [HttpGet("get-messages/{roomID}")]
+        [Authorize]
         public async Task<IActionResult> GetAllMessages(int roomID)
         {
             return Ok(await _repo.GetAllMessages(roomID));
         }
 
         [HttpPost("add-new-room")]
-        public async Task<IActionResult> AddRoom(ChatRoomVM room)
+        [Authorize]
+        public async Task<IActionResult> AddRoom([FromForm] ChatRoomVM room)
         {
             return Ok(await _repo.AddRoom(room));
         }
 
         [HttpPost("send-message")]
-        public async Task<IActionResult> SendMessage([FromForm]MessageVM message)
+        [Authorize]
+        public async Task<IActionResult> SendMessage([FromForm] MessageVM message)
         {
             if (!message.IsCustomerSend)
             {

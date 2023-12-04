@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using RetroFootballAPI.Hubs;
+using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
 
@@ -19,43 +21,49 @@ namespace RetroFootballAPI.Controllers
             _hub = hub;
         }
 
-
+        
         [HttpGet("get-today/{type}")]
+        [Authorize(Roles = AppRole.Admin)]
         public async Task<IActionResult> GetToday(int type)
         {
             return Ok(await _repo.GetToday(type));
         }
 
-
+        
         [HttpGet("get-by-month/{month}/{type}")]
+        [Authorize(Roles = AppRole.Admin)]
         public async Task<IActionResult> GetByMonth(int month, int type)
         {
             return Ok(await _repo.GetByMonth(month, type));
         }
 
-
-        [HttpGet("get-by-id/{customerID}/{type}")]
+        
+        [HttpGet("get-by-customerID/{customerID}/{type}")]
+        [Authorize]
         public async Task<ActionResult> GetByCustomer(string customerID, int type)
         {
             return Ok(await _repo.GetByCustomer(customerID, type));
         }
 
-
+        
         [HttpPost("new-order")]
-        public async Task<IActionResult> Add(OrderVM order)
+        [Authorize]
+        public async Task<IActionResult> Add([FromForm] OrderVM order)
         {
             return Ok(await _repo.Add(order));
         }
 
-
+        
         [HttpDelete("delete/{orderID}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int orderID)
         {
             return Ok(await _repo.Delete(orderID));
         }
 
-
+        
         [HttpPut("update/{orderID}")]
+        [Authorize]
         public async Task<IActionResult> UpdateStatus(int orderID)
         {
             var order = await _repo.UpdateStatus(orderID);

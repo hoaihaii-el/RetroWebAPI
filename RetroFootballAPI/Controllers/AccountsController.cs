@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 
@@ -52,7 +53,9 @@ namespace RetroFootballAPI.Controllers
             );
         }
 
+        
         [HttpGet("logout")]
+        [Authorize]
         public async Task<IActionResult> LogOut()
         {
             await _repo.Logout();

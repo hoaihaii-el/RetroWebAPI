@@ -66,9 +66,31 @@ namespace RetroFootballAPI.Services
         }
 
 
-        public async Task<Product> Update(Product product)
+        public async Task<Product> Update(ProductVM productVM)
         {
-            _context.Entry(product).State = EntityState.Modified;
+            var product = new Product
+            {
+                ID = await AutoID(),
+                Name = productVM.Name,
+                Club = productVM.Club,
+                Nation = productVM.Nation,
+                Season = productVM.Season,
+                Price = productVM.Price,
+                SizeS = productVM.SizeS,
+                SizeM = productVM.SizeM,
+                SizeL = productVM.SizeL,
+                SizeXL = productVM.SizeXL,
+                Status = productVM.Status,
+                TimeAdded = DateTime.Now,
+                Description = productVM.Description,
+                Point = productVM.Point,
+                UrlMain = await UploadImage.Instance.UploadAsync(productVM.UrlMain),
+                UrlSub1 = await UploadImage.Instance.UploadAsync(productVM.UrlSub1),
+                UrlSub2 = await UploadImage.Instance.UploadAsync(productVM.UrlSub2),
+                UrlThumb = await UploadImage.Instance.UploadAsync(productVM.UrlThumb)
+            };
+
+            _context.Products.Update(product);
             await _context.SaveChangesAsync();
 
             return product;

@@ -1,11 +1,14 @@
 ﻿using RetroFootballAPI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using RetroFootballAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using RetroFootballAPI.StaticServices;
 
 namespace RetroFootballAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class CartsController : ControllerBase
     {
         private readonly ICartRepo _repo;
@@ -18,6 +21,7 @@ namespace RetroFootballAPI.Controllers
 
         
         [HttpGet("{customerID}")]
+        [Authorize]
         public async Task<IActionResult> GetCarts(string customerID)
         {
             return Ok(await _repo.GetCarts(customerID));
@@ -25,6 +29,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpGet("total/{customerID}")]
+        [Authorize]
         public async Task<IActionResult> GetTotalCart(string customerID)
         {
             return Ok(await _repo.GetCartTotal(customerID));
@@ -32,6 +37,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpGet("items/{customerID}")]
+        [Authorize]
         public async Task<IActionResult> GetCartItems(string customerID)
         {
             return Ok(await _repo.GetTotalItems(customerID));
@@ -39,9 +45,10 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPost("add-to-cart")]
-        public async Task<IActionResult> AddToCart(CartVM cart)
+        [Authorize]
+        public async Task<IActionResult> AddToCart([FromForm] CartVM cart)
         {
-            if (cart.Quantity < 1 || !CartVM.ProductSize.Contains(cart.Size ?? ""))
+            if (cart.Quantity < 1 || !ProductSize.Sizes.Contains(cart.Size ?? ""))
             {
                 return BadRequest();
             }
@@ -51,6 +58,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPut("increase/{customerID}/{productID}/{size}")]
+        [Authorize]
         public async Task<IActionResult> IncreaseQuantity(string customerID, string productID, string size)
         {
             return Ok(await _repo.IncreaseQuantity(customerID, productID, size));
@@ -58,6 +66,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPut("decrease/{customerID}/{productID}/{size}")]
+        [Authorize]
         public async Task<IActionResult> DecreaseQuantity(string customerID, string productID, string size)
         {
             return Ok(await _repo.DecreaseQuantity(customerID, productID, size));
@@ -65,6 +74,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpDelete("remove/{customerID}/{productID}/{size}")]
+        [Authorize]
         public async Task<IActionResult> RemoveFromCart(string customerID, string productID, string size)
         {
             return Ok(await _repo.RemoveFromCart(customerID, productID, size));
@@ -72,6 +82,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpDelete("clear/{customerID}")]
+        [Authorize]
         public async Task<IActionResult> ClearCart(string customerID)
         {
             await _repo.ClearCart(customerID);

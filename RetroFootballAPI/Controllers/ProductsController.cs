@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
@@ -53,26 +54,30 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPut("update/{product}")]
-        public async Task<IActionResult> Update(Product product)
+        public async Task<IActionResult> Update([FromForm] ProductVM product)
         {
             return Ok(await _repo.Update(product));
         }
 
-
+        
         [HttpPost("new-product")]
-        public async Task<IActionResult> Add([FromForm]ProductVM product)
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<IActionResult> Add([FromForm] ProductVM product)
         {
             return Ok(await _repo.Add(product));
         }
 
-
+        
         [HttpDelete("delete/{id}")]
+        [Authorize(Roles = AppRole.Admin)]
         public async Task<IActionResult> Delete(string id)
         {
             return Ok(await _repo.Delete(id));
         }
 
+
         [HttpGet("top-selling/{month}/{year}")]
+        [Authorize(Roles = AppRole.Admin)]
         public async Task<IActionResult> TopSelling(int month, int year)
         {
             return Ok(await _repo.TopSelling(month, year));
@@ -97,7 +102,7 @@ namespace RetroFootballAPI.Controllers
         }
 
         [HttpGet("get-by-checkbox/{page}/{productPerPage}")]
-        public async Task<IActionResult> GetByCheckBox([FromQuery]List<string> value, int page, int productPerPage)
+        public async Task<IActionResult> GetByCheckBox([FromQuery] List<string> value, int page, int productPerPage)
         {
             return Ok(await _repo.GetByCheckBox(value, page, productPerPage));
         }

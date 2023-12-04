@@ -17,7 +17,7 @@ namespace RetroFootballAPI.Repositories
         Task<IEnumerable<Product>> GetByCheckBox(List<string> value, int page, int productPerPage);
         Task<IEnumerable<Product>> GetBySearch(string value, int page, int productPerPage);
         Task<Product> Add(ProductVM product);
-        Task<Product> Update(Product product);
+        Task<Product> Update(ProductVM product);
         Task<Product> Delete(string id);
     }
 }

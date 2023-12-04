@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RetroFootballAPI.ViewModels;
 using RetroFootballAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RetroFootballAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class DeliveryInfoesController : ControllerBase
     {
         private readonly IDeliveryInfoRepo _repo;
@@ -16,8 +18,8 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-
         [HttpGet("get-all/{customerID}")]
+        [Authorize]
         public async Task<ActionResult> GetAll(string customerID)
         {
             return Ok(await _repo.GetAll(customerID));
@@ -25,6 +27,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpGet("get-by-id/{customerID}/{priority}")]
+        [Authorize]
         public async Task<ActionResult> GetDeliveryInfo(string customerID, int priority)
         {
             return Ok(await _repo.GetByID(customerID, priority));
@@ -32,6 +35,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPut("set-default/{customerID}/{priority}")]
+        [Authorize]
         public async Task<IActionResult> SetDefault(string customerID, int priority)
         {
             return Ok(await _repo.SetDefault(customerID, priority));
@@ -39,21 +43,23 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPost("new-info")]
-        public async Task<ActionResult> Add(DeliveryInfoVM info)
+        [Authorize]
+        public async Task<ActionResult> Add([FromForm] DeliveryInfoVM info)
         {
             return Ok(await _repo.Add(info));
         }
 
 
         [HttpPut("update/{pri}")]
-        public async Task<IActionResult> UpdateCustomer(DeliveryInfoVM info, int pri)
+        [Authorize]
+        public async Task<IActionResult> UpdateCustomer([FromForm] DeliveryInfoVM info, int pri)
         {
             return Ok(await _repo.Update(info, pri));
         }
 
 
-
         [HttpDelete("delete/{customerID}/{priority}")]
+        [Authorize]
         public async Task<IActionResult> Delete(string customerID, int priority)
         {
             return Ok(await _repo.Delete(customerID, priority));

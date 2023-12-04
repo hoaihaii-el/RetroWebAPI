@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
 
@@ -29,14 +30,14 @@ namespace RetroFootballAPI.Controllers
             return Ok(await _repo.GetAvgPoint(productID));
         }
 
-
+        [Authorize]
         [HttpPost("new-feedback")]
         public async Task<ActionResult> Add([FromForm]FeedbackVM feedback)
         {
             return Ok(await _repo.Add(feedback));
         }
 
-
+        [Authorize]
         [HttpPut("update")]
         public async Task<IActionResult> Update([FromForm]FeedbackVM feedback)
         {
