@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
+using RetroFootballAPI.Responses;
 using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
+using System.Security.Claims;
 
 namespace RetroFootballAPI.Services
 {
@@ -29,7 +31,7 @@ namespace RetroFootballAPI.Services
         }
 
 
-        public async Task<string> Login(Login login)
+        public async Task<LoginResponse> Login(Login login)
         {
             var user = await _userManager.FindByEmailAsync(login.Email);
 
@@ -42,12 +44,19 @@ namespace RetroFootballAPI.Services
 
             if (!passwordValid)
             {
-                return string.Empty;
+                throw new KeyNotFoundException();
             }
 
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            return _JWTManager.GenerateToken(user.Email, userRoles.FirstOrDefault() ?? "");
+            return new LoginResponse
+            {
+                access_token = _JWTManager.GenerateToken(user.Email, userRoles.FirstOrDefault() ?? ""),
+                id = user.Id,
+                name = user.UserName, 
+                email = user.Email, 
+                role = userRoles.FirstOrDefault()
+            };
         }
 
         public async Task<CustomerVM> Register(Register register)
@@ -138,6 +147,20 @@ namespace RetroFootballAPI.Services
             }
 
             await _userManager.AddToRoleAsync(admin, AppRole.Admin);
+        }
+
+        public async Task<Customer> ReadMe(ClaimsPrincipal claim)
+        {
+            var user = await _userManager.GetUserAsync(claim);
+
+            var customer = await _context.Customers.FindAsync(user.Id);
+
+            if (customer == null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            return customer;
         }
     }
 }

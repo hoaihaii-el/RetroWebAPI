@@ -19,7 +19,11 @@ namespace RetroFootballAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(Register register)
         {
-            return Ok(await _repo.Register(register));
+            return Ok(new
+            {
+                message = "Success",
+                data = await _repo.Register(register)
+            });
         }
 
         [HttpPost("login")]
@@ -29,28 +33,41 @@ namespace RetroFootballAPI.Controllers
             {
                 var result = await _repo.Login(user);
 
-                if (string.IsNullOrEmpty(result))
+                return Ok(new
                 {
-                    return Unauthorized();
-                }
-
-                return Ok(result);
+                    message = "Success",
+                    data = result
+                });
             }
             catch (ArgumentNullException)
             {
-                return Ok(
-                    new { message = "User not found" }
-                );
+                return StatusCode(StatusCodes.Status422UnprocessableEntity);
             }
+            catch (KeyNotFoundException)
+            {
+                return Unauthorized();
+            }
+        }
+
+        [Authorize]
+        [HttpGet("read-me")]
+        public async Task<IActionResult> GetInfo()
+        {
+            return Ok(new
+            {
+                message = "Success",
+                data = await _repo.ReadMe(HttpContext.User)
+            });
         }
 
         [HttpPost("new-admin")]
         public async Task<IActionResult> NewAdminAccount(Register admin)
         {
             await _repo.NewAdminAccount(admin);
-            return Ok(
-                new { success = true }
-            );
+            return Ok(new 
+            { 
+                success = true 
+            });
         }
 
         
@@ -59,9 +76,10 @@ namespace RetroFootballAPI.Controllers
         public async Task<IActionResult> LogOut()
         {
             await _repo.Logout();
-            return Ok(
-                new { success = true }
-            );
+            return Ok(new 
+            { 
+                message = "Success" 
+            });
         }
 
         [HttpPost("login-by-google")]
@@ -74,7 +92,11 @@ namespace RetroFootballAPI.Controllers
                 return Unauthorized();
             }
 
-            return Ok(result);
+            return Ok(new
+            {
+                message = "Success",
+                access_token = result
+            });
         }
     }
 }
