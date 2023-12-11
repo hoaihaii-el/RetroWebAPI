@@ -151,7 +151,9 @@ namespace RetroFootballAPI.Services
 
         public async Task<Customer> ReadMe(ClaimsPrincipal claim)
         {
-            var user = await _userManager.GetUserAsync(claim);
+            var email = claim.FindFirstValue(ClaimTypes.Email);
+
+            var user = await _userManager.FindByEmailAsync(email);
 
             var customer = await _context.Customers.FindAsync(user.Id);
 

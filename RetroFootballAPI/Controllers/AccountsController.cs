@@ -56,7 +56,7 @@ namespace RetroFootballAPI.Controllers
             return Ok(new
             {
                 message = "Success",
-                data = await _repo.ReadMe(HttpContext.User)
+                data = await _repo.ReadMe(User)
             });
         }
 
