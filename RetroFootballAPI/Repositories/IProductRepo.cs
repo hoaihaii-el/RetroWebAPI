@@ -12,12 +12,26 @@ namespace RetroFootballAPI.Repositories
         Task<IEnumerable<Product>> TopSelling(int month, int year);
         Task<IEnumerable<Product>> NewArrivals();
         Task<IEnumerable<Product>> GetByCategory(string cate, string value, int page, int productPerPage);
-        Task<IEnumerable<Product>> GetByPrice(decimal min, decimal max, int page, int productPerPage);
-        Task<IEnumerable<Product>> GetProductByPage(int page, int productPerPage);
-        Task<IEnumerable<Product>> GetByCheckBox(List<string> value, int page, int productPerPage);
+        Task<IEnumerable<Product>> FilterBy(
+            List<string> names,
+            List<string> seasons,
+            bool club = false,
+            bool nation = false,
+            decimal minPrice = 0,
+            decimal maxPrice = 10000000,
+            string sortBy = "Name",
+            bool descending = false,
+            bool sizeS = false,
+            bool sizeM = false,
+            bool sizeL = false,
+            bool sizeXL = false,
+            int page = 1,
+            int productPerPage = 8);
         Task<IEnumerable<Product>> GetBySearch(string value, int page, int productPerPage);
+        Task<IEnumerable<Product>> GetByLeage(string leageName);
+        Task<IEnumerable<Product>> GetByNation(string nationName);
         Task<Product> Add(ProductVM product);
-        Task<Product> Update(ProductVM product);
+        Task<Product> Update(string productID, ProductVM product);
         Task<Product> Delete(string id);
     }
 }

@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RetroFootballAPI.Repositories;
-using RetroFootballWeb.Repository;
+﻿using Humanizer.Localisation;
+using Microsoft.EntityFrameworkCore;
 using RetroFootballAPI.Models;
-using RetroFootballAPI.ViewModels;
+using RetroFootballAPI.Repositories;
 using RetroFootballAPI.StaticService;
+using RetroFootballAPI.StaticServices;
+using RetroFootballAPI.ViewModels;
+using RetroFootballWeb.Repository;
 using System.Text.RegularExpressions;
 
 namespace RetroFootballAPI.Services
@@ -35,7 +37,8 @@ namespace RetroFootballAPI.Services
                 Status = productVM.Status,
                 TimeAdded = DateTime.Now,
                 Description = productVM.Description,
-                Point = productVM.Point,
+                Point = 0,
+                Sold = 0,
                 UrlMain = await UploadImage.Instance.UploadAsync(productVM.UrlMain),
                 UrlSub1 = await UploadImage.Instance.UploadAsync(productVM.UrlSub1),
                 UrlSub2 = await UploadImage.Instance.UploadAsync(productVM.UrlSub2),
@@ -66,29 +69,30 @@ namespace RetroFootballAPI.Services
         }
 
 
-        public async Task<Product> Update(ProductVM productVM)
+        public async Task<Product> Update(string productID, ProductVM productVM)
         {
-            var product = new Product
+            var product = await _context.Products.FindAsync(productID);
+
+            if (product == null)
             {
-                ID = await AutoID(),
-                Name = productVM.Name,
-                Club = productVM.Club,
-                Nation = productVM.Nation,
-                Season = productVM.Season,
-                Price = productVM.Price,
-                SizeS = productVM.SizeS,
-                SizeM = productVM.SizeM,
-                SizeL = productVM.SizeL,
-                SizeXL = productVM.SizeXL,
-                Status = productVM.Status,
-                TimeAdded = DateTime.Now,
-                Description = productVM.Description,
-                Point = productVM.Point,
-                UrlMain = await UploadImage.Instance.UploadAsync(productVM.UrlMain),
-                UrlSub1 = await UploadImage.Instance.UploadAsync(productVM.UrlSub1),
-                UrlSub2 = await UploadImage.Instance.UploadAsync(productVM.UrlSub2),
-                UrlThumb = await UploadImage.Instance.UploadAsync(productVM.UrlThumb)
-            };
+                throw new KeyNotFoundException();
+            }
+
+            product.Name = productVM.Name;
+            product.Club = productVM.Club;
+            product.Nation = productVM.Nation;
+            product.Season = productVM.Season;
+            product.Price = productVM.Price;
+            product.SizeS = productVM.SizeS;
+            product.SizeM = productVM.SizeM;
+            product.SizeL = productVM.SizeL;
+            product.SizeXL = productVM.SizeXL;
+            product.Status = productVM.Status;
+            product.Description = productVM.Description;
+            product.UrlMain = await UploadImage.Instance.UploadAsync(productVM.UrlMain);
+            product.UrlSub1 = await UploadImage.Instance.UploadAsync(productVM.UrlSub1);
+            product.UrlSub2 = await UploadImage.Instance.UploadAsync(productVM.UrlSub2);
+            product.UrlThumb = await UploadImage.Instance.UploadAsync(productVM.UrlThumb);
 
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
@@ -131,9 +135,15 @@ namespace RetroFootballAPI.Services
 
         public async Task<IEnumerable<Product>> GetAll()
         {
-            var products = _context.Products.ToListAsync();
+            var products = await _context.Products.ToListAsync();
 
-            return await products;
+            foreach (var product in products)
+            {
+                product.Point = await GetAvgPoint(product.ID);
+                product.Sold = await Sold(product.ID);
+            }
+
+            return products;
         }
 
         public async Task<Product> GetByID(string id)
@@ -145,23 +155,32 @@ namespace RetroFootballAPI.Services
                 throw new KeyNotFoundException(id);
             }
 
+            product.Point = await GetAvgPoint(product.ID);
+            product.Sold = await Sold(product.ID);
+
             return product;
         }
 
         public async Task<IEnumerable<Product>> NewArrivals()
         {
-            var products = _context.Products
+            var products = await _context.Products
                 .OrderByDescending(p => p.TimeAdded)
                 .Take(3)
                 .ToListAsync();
 
-            return await products;
+            foreach (var product in products)
+            {
+                product.Point = await GetAvgPoint(product.ID);
+                product.Sold = await Sold(product.ID);
+            }
+
+            return products;
         }
 
 
         public async Task<IEnumerable<Product>> TopSelling(int month, int year)
         {
-            return await _context.OrderDetails
+            var products = await _context.OrderDetails
                 .Where(o => o.Order.TimeCreate.Month == month &&
                             o.Order.TimeCreate.Year == year).
                            GroupBy(od => od.ProductID)
@@ -177,6 +196,14 @@ namespace RetroFootballAPI.Services
                       product => product.ID,
                       (detail, product) => product)
                 .ToListAsync();
+
+            foreach (var product in products)
+            {
+                product.Point = await GetAvgPoint(product.ID);
+                product.Sold = await Sold(product.ID);
+            }
+
+            return products;
         }
 
         public async Task<IEnumerable<Product>> GetByCategory(string cate, string value, int page, int productPerPage)
@@ -208,40 +235,6 @@ namespace RetroFootballAPI.Services
                 .Take(productPerPage);
         }
 
-        public async Task<IEnumerable<Product>> GetByPrice(decimal min, decimal max, int page, int productPerPage)
-        {
-            return await _context.Products
-                .Where(p => p.Price >= min && p.Price <= max)
-                .Skip((page - 1) * productPerPage)
-                .Take(productPerPage)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Product>> GetProductByPage(int page, int productPerPage)
-        {
-            return await _context.Products
-                .Skip((page - 1) * productPerPage)
-                .Take(productPerPage)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Product>> GetByCheckBox(List<string> value, int page, int productPerPage)
-        {
-            var products = await _context.Products.ToListAsync();
-
-            var result = new List<Product>();
-
-            foreach (var item in products)
-            {
-                if (value.Any(x => item.Name.Contains(x)))
-                {
-                    result.Add(item);
-                }
-            }
-
-            return result;
-        }
-
         public async Task<IEnumerable<Product>> GetBySearch(string value, int page, int productPerPage)
         {
             return await _context.Products
@@ -249,6 +242,169 @@ namespace RetroFootballAPI.Services
                 .Skip((page - 1) * productPerPage)
                 .Take(productPerPage)
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> FilterBy(
+            List<string> names,
+            List<string> seasons,
+            bool club = false,
+            bool nation = false,
+            decimal minPrice = 0,
+            decimal maxPrice = 10000000,
+            string sortBy = "Name",
+            bool descending = false,
+            bool sizeS = false,
+            bool sizeM = false,
+            bool sizeL = false,
+            bool sizeXL = false,
+            int page = 1,
+            int productPerPage = 8)
+        {
+            var filterProducts = await _context.Products.ToListAsync();
+
+            if (club)
+            {
+                filterProducts = filterProducts
+                    .Where(p => p.Club != "None")
+                    .ToList();
+            }
+            if (nation)
+            {
+                filterProducts = filterProducts
+                    .Where(p => p.Club != "None")
+                    .ToList();
+            }
+
+            filterProducts = filterProducts
+                .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
+                .ToList();
+
+            if (sizeS)
+            {
+                filterProducts = filterProducts
+                    .Where(p => p.SizeS > 0)
+                    .ToList();
+            }
+            if (sizeM)
+            {
+                filterProducts = filterProducts
+                    .Where(p => p.SizeM > 0)
+                    .ToList();
+            }
+            if (sizeL)
+            {
+                filterProducts = filterProducts
+                    .Where(p => p.SizeL > 0)
+                    .ToList();
+            }
+            if (sizeXL)
+            {
+                filterProducts = filterProducts
+                    .Where(p => p.SizeXL > 0)
+                    .ToList();
+            }
+
+            switch (sortBy)
+            {
+                case "TimeAdded":
+                    if (descending)
+                    {
+                        filterProducts = filterProducts
+                            .OrderByDescending(p => p.TimeAdded)
+                            .ToList();
+
+                    }
+                    else
+                    {
+                        filterProducts = filterProducts
+                            .OrderBy(p => p.TimeAdded)
+                            .ToList();
+                    }
+                    break;
+                case "Name":
+                    if (descending)
+                    {
+                        filterProducts = filterProducts
+                            .OrderByDescending(p => p.Name)
+                            .ToList();
+                    }
+                    else
+                    {
+                        filterProducts = filterProducts
+                            .OrderBy(p => p.Name)
+                            .ToList();
+                    }
+                    break;
+                case "Price":
+                    if (descending)
+                    {
+                        filterProducts = filterProducts
+                            .OrderByDescending(p => p.Price)
+                            .ToList();
+                    }
+                    else
+                    {
+                        filterProducts = filterProducts
+                            .OrderBy(p => p.Price)
+                            .ToList();
+                    }
+                    break;
+            }
+
+            var result = new List<Product>();
+
+            if (names.Count > 0)
+            {
+                foreach (var item in filterProducts)
+                {
+                    if (names.Any(x => item.Name.Contains(x)))
+                    {
+                        result.Add(item);
+                    }
+                }
+
+                filterProducts = result;
+            }
+
+            if (seasons.Count > 0)
+            {
+                result.Clear();
+
+                foreach (var item in filterProducts)
+                {
+                    if (seasons.Any(x => item.Season.Contains(x)))
+                    {
+                        result.Add(item);
+                    }
+                }
+
+                filterProducts = result;
+            }
+
+            foreach (var product in filterProducts)
+            {
+                product.Point = await GetAvgPoint(product.ID);
+                product.Sold = await Sold(product.ID);
+            }
+
+            return filterProducts
+                .Skip((page - 1) * productPerPage)
+                .Take(productPerPage)
+                .ToList();
+        }
+
+        public async Task<double> GetAvgPoint(string productID)
+        {
+            return await _context.Feedbacks.Where(f => f.ProductID == productID)
+                .Select(f => f.Point)
+                .AverageAsync();
+        }
+
+        public async Task<int> Sold(string productID)
+        {
+            return await _context.OrderDetails
+                .Where(p => p.ProductID == productID)
+                .CountAsync();
         }
 
         private async Task<string> AutoID()
@@ -277,6 +433,82 @@ namespace RetroFootballAPI.Services
             }
 
             return ID + numeric;
+        }
+
+        public async Task<IEnumerable<Product>> GetByLeage(string leageName)
+        {
+            var products = await _context.Products.ToListAsync();
+
+            var leageTeams = new List<string>();
+
+            switch (leageName)
+            {
+                case "Premier":
+                    leageTeams = Teams.PremierLeagueTeams;
+                    break;
+                case "Laliga":
+                    leageTeams = Teams.LaLigaTeams;
+                    break;
+                case "Seria":
+                    leageTeams = Teams.SerieATeams;
+                    break;
+                case "Bundesliga":
+                    leageTeams = Teams.BundesligaTeams;
+                    break;
+                case "Ligue1":
+                    leageTeams = Teams.Ligue1Teams;
+                    break;
+                case "VLeague":
+                    leageTeams = Teams.VLeagueTeams;
+                    break;
+            }
+
+            var result = new List<Product>();
+
+            foreach (var product in products)
+            {
+                if (leageTeams.Any(team => product.Name.Contains(team)))
+                {
+                    result.Add(product);
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<Product>> GetByNation(string nationContinent)
+        {
+            var products = await _context.Products.ToListAsync();
+
+            var nationTeams = new List<string>();
+
+            switch (nationContinent)
+            {
+                case "Europe":
+                    nationTeams = Teams.EuropeanNationalTeams;
+                    break;
+                case "Asia":
+                    nationTeams = Teams.AsianNationalTeams;
+                    break;
+                case "Africa":
+                    nationTeams = Teams.AfricanNationalTeams;
+                    break;
+                case "SouthAmerica":
+                    nationTeams = Teams.SouthAmericanNationalTeams;
+                    break;
+            }
+
+            var result = new List<Product>();
+
+            foreach (var product in products)
+            {
+                if (nationTeams.Any(team => product.Name.Contains(team)))
+                {
+                    result.Add(product);
+                }
+            }
+
+            return result;
         }
     }
 }

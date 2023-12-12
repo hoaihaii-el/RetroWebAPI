@@ -13,7 +13,6 @@
         public int SizeXL { get; set; }
         public string? Status { get; set; }
         public string? Description { get; set; }
-        public double Point { get; set; }
         public IFormFile? UrlMain { get; set; }
         public IFormFile? UrlSub1 { get; set; }
         public IFormFile? UrlSub2 { get; set; }

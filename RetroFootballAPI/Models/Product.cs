@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RetroFootballAPI.Models
 {
@@ -25,6 +26,8 @@ namespace RetroFootballAPI.Models
         [MaxLength(500)]
         public string? Description { get; set; }
         public double Point { get; set; }
+        [NotMapped]
+        public int Sold { get; set; }
         public string? UrlMain { get; set; }
         public string? UrlSub1 { get; set; }
         public string? UrlSub2 { get; set; }

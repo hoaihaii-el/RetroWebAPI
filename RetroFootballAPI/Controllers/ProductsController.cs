@@ -53,10 +53,10 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpPut("update/{product}")]
-        public async Task<IActionResult> Update([FromForm] ProductVM product)
+        [HttpPut("update/{productID}")]
+        public async Task<IActionResult> Update([FromForm] string productID, [FromForm] ProductVM product)
         {
-            return Ok(await _repo.Update(product));
+            return Ok(await _repo.Update(productID, product));
         }
 
         
@@ -89,22 +89,40 @@ namespace RetroFootballAPI.Controllers
             return Ok(await _repo.GetByCategory(cate, value, page, productPerPage));
         }
 
-        [HttpGet("get-by-price/{min}/{max}/{page}/{productPerPage}")]
-        public async Task<IActionResult> GetByPrice(decimal min, decimal max, int page, int productPerPage)
+        [HttpGet("filter-by")]
+        public async Task<IActionResult> FilterBy(
+            [FromQuery] List<string> names,
+            [FromQuery] List<string> seasons,
+            [FromQuery] bool club = false,
+            [FromQuery] bool nation = false,
+            [FromQuery] decimal minPrice = 0,
+            [FromQuery] decimal maxPrice = 10000000,
+            [FromQuery] string sortBy = "Name",
+            [FromQuery] bool descending = false,
+            [FromQuery] bool sizeS = false,
+            [FromQuery] bool sizeM = false,
+            [FromQuery] bool sizeL = false,
+            [FromQuery] bool sizeXL = false,
+            [FromQuery] int page = 1,
+            [FromQuery] int productPerPage = 8)
         {
-            return Ok(await _repo.GetByPrice(min, max, page, productPerPage));
-        }
-
-        [HttpGet("get-all-by-page/{page}/{productPerPage}")]
-        public async Task<IActionResult> GetAllByPage(int page, int productPerPage)
-        {
-            return Ok(await _repo.GetProductByPage(page, productPerPage));
-        }
-
-        [HttpGet("get-by-checkbox/{page}/{productPerPage}")]
-        public async Task<IActionResult> GetByCheckBox([FromQuery] List<string> value, int page, int productPerPage)
-        {
-            return Ok(await _repo.GetByCheckBox(value, page, productPerPage));
+            return Ok(
+                await _repo.FilterBy(
+                    names,
+                    seasons,
+                    club,
+                    nation,
+                    minPrice,
+                    maxPrice,
+                    sortBy,
+                    descending,
+                    sizeS,
+                    sizeM,
+                    sizeL,
+                    sizeXL,
+                    page, 
+                    productPerPage)
+                );
         }
 
         [HttpGet("get-by-search/{value}/{page}/{productPerPage}")]
