@@ -395,9 +395,16 @@ namespace RetroFootballAPI.Services
 
         public async Task<double> GetAvgPoint(string productID)
         {
-            return await _context.Feedbacks.Where(f => f.ProductID == productID)
-                .Select(f => f.Point)
-                .AverageAsync();
+            try
+            {
+                return await _context.Feedbacks.Where(f => f.ProductID == productID)
+                    .Select(f => f.Point)
+                    .AverageAsync();
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         public async Task<int> Sold(string productID)
