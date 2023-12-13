@@ -271,7 +271,7 @@ namespace RetroFootballAPI.Services
             if (nation)
             {
                 filterProducts = filterProducts
-                    .Where(p => p.Club != "None")
+                    .Where(p => p.Nation != "None")
                     .ToList();
             }
 
