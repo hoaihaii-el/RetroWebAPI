@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
+using RetroFootballAPI.StaticService;
+using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
 
 namespace RetroFootballAPI.Services
@@ -65,6 +67,24 @@ namespace RetroFootballAPI.Services
             {
                 throw new KeyNotFoundException(id);
             }
+
+            return customer;
+        }
+
+        public async Task<Customer> UpdateAvatar(UpdateAvatarVM avatar)
+        {
+            var user = await _context.Users.Where(u => u.Email == avatar.Email).FirstOrDefaultAsync();
+
+            var customer = await _context.Customers.FindAsync(user?.Id);
+
+            if (customer == null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            customer.Avatar = await UploadImage.Instance.UploadAsync(avatar.Avatar);
+
+            _context.Customers.Update(customer);
 
             return customer;
         }

@@ -73,7 +73,8 @@ namespace RetroFootballAPI.Services
             {
                 ID = user.Id,
                 Name = user.UserName,
-                Phone = user.PhoneNumber
+                Phone = user.PhoneNumber,
+                Avatar = "https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg"
             };
 
             _context.Customers.Add(customer);
@@ -96,7 +97,8 @@ namespace RetroFootballAPI.Services
                 ID = user.Id,
                 Name = user.UserName,
                 Email = user.Email,
-                Phone = user.PhoneNumber
+                Phone = user.PhoneNumber,
+                Avatar = customer.Avatar
             };
         }
 

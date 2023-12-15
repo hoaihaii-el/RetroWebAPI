@@ -1,4 +1,5 @@
 ﻿using RetroFootballAPI.Models;
+using RetroFootballAPI.ViewModels;
 
 namespace RetroFootballAPI.Repositories
 {
@@ -8,6 +9,7 @@ namespace RetroFootballAPI.Repositories
         Task<Customer> GetByID(string id);
         Task<Customer> Add(Customer customer);
         Task<Customer> Update(Customer customer);
+        Task<Customer> UpdateAvatar(UpdateAvatarVM avatar);
         Task<Customer> Delete(string id);
     }
 }

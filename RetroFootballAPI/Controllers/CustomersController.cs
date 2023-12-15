@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
+using RetroFootballAPI.ViewModels;
 
 namespace RetroFootballAPI.Controllers
 {
@@ -34,11 +35,18 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpPut("update/{customer}")]
+        [HttpPut("update-info/{customer}")]
         [Authorize]
         public async Task<IActionResult> UpdateCustomer([FromForm] Customer customer)
         {
             return Ok(await _repo.Update(customer));
+        }
+
+
+        [HttpPut("update-avatar")]
+        public async Task<IActionResult> UpdateAvatar([FromForm] UpdateAvatarVM avatar)
+        {
+            return Ok(await _repo.UpdateAvatar(avatar));
         }
 
         

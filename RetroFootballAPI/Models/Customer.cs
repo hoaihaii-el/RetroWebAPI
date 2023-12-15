@@ -14,5 +14,8 @@ namespace RetroFootballAPI.Models
         public string? Phone { get; set; }
 
         public bool Male { get; set; }
+        public string? Address { get; set; }
+        public DateTime DateBirth { get; set; }
+        public string? Avatar { get; set; }
     }
 }
