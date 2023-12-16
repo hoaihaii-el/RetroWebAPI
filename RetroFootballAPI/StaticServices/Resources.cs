@@ -122,21 +122,21 @@
 
         public static List<string> VLeagueTeams = new List<string>
         {
-            "Binh Duong",
-            "Ha Noi",
-            "Hoang Anh Gia Lai",
-            "Ho Chi Minh",
-            "Nam Dinh",
-            "Song Lam Nghe An",
-            "Thanh Hoa",
-            "Quang Ninh",
-            "Da Nang",
+            "Bình Dương",
+            "Hà Nội",
+            "Hoàng Anh Gia Lai",
+            "Hồ Chí Minh",
+            "Nam Định",
+            "Sông Lam Nghệ An",
+            "Thanh Hóa",
+            "Quảng Ninh",
+            "Đà Nẵng",
             "Viettel",
-            "Thanh Hoa",
-            "Ha Tinh",
-            "Hai Phong",
-            "Sai Gon",
-            "Binh Dinh"
+            "Hà Tĩnh",
+            "Hải Phòng",
+            "Sài Gòn",
+            "Bình Định",
+            "Quảng Nam"
         };
 
         public static List<string> EuropeanNationalTeams = new List<string>
@@ -202,6 +202,13 @@
             "Venezuela",
             "Bolivia"
             // Thêm các đội khác...
+        };
+
+        public static List<string> NorthAmericanNationalTeams = new List<string>
+        {
+            "USA",
+            "Mexico",
+            "Canada"
         };
 
         public static List<string> AfricanNationalTeams = new List<string>

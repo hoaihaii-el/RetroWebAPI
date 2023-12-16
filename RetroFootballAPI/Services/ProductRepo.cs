@@ -465,7 +465,7 @@ namespace RetroFootballAPI.Services
                 case "Ligue1":
                     leageTeams = Teams.Ligue1Teams;
                     break;
-                case "VLeague":
+                default:
                     leageTeams = Teams.VLeagueTeams;
                     break;
             }
@@ -502,6 +502,9 @@ namespace RetroFootballAPI.Services
                     break;
                 case "SouthAmerica":
                     nationTeams = Teams.SouthAmericanNationalTeams;
+                    break;
+                default:
+                    nationTeams = Teams.NorthAmericanNationalTeams;
                     break;
             }
 

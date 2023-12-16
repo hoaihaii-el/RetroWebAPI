@@ -55,7 +55,8 @@ namespace RetroFootballAPI.Services
                 id = user.Id,
                 name = user.UserName, 
                 email = user.Email, 
-                role = userRoles.FirstOrDefault()
+                role = userRoles.FirstOrDefault(),
+                Customer = await _context.Customers.FindAsync(user.Id)
             };
         }
 
