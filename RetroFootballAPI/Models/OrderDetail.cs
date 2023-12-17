@@ -8,7 +8,7 @@ namespace RetroFootballAPI.Models
         public int OrderID { get; set; }
         [Key, MaxLength(50), Required]
         public string? ProductID { get; set; }
-        [Key, MaxLength(5), Required]
+        [Key, MaxLength(10), Required]
         public string? Size { get; set; }
         public int Quantity { get; set; }
         [MaxLength(50)]

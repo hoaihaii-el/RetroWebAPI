@@ -9,7 +9,7 @@ namespace RetroFootballAPI.Models
 
         [Key, MaxLength(50), Required]
         public string? ProductID { get; set; }
-        [Key, MaxLength(5), Required]
+        [Key, MaxLength(10), Required]
         public string? Size { get; set; }
 
         [Required]
