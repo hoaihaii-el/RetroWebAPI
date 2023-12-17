@@ -306,20 +306,10 @@ namespace RetroFootballAPI.Services
 
             switch (sortBy)
             {
-                case "TimeAdded":
-                    if (descending)
-                    {
-                        filterProducts = filterProducts
+                case "Newest":
+                    filterProducts = filterProducts
                             .OrderByDescending(p => p.TimeAdded)
                             .ToList();
-
-                    }
-                    else
-                    {
-                        filterProducts = filterProducts
-                            .OrderBy(p => p.TimeAdded)
-                            .ToList();
-                    }
                     break;
                 case "Name":
                     if (descending)
@@ -385,6 +375,14 @@ namespace RetroFootballAPI.Services
             {
                 product.Point = await GetAvgPoint(product.ID);
                 product.Sold = await Sold(product.ID);
+            }
+
+            if (sortBy == "TopSelling")
+            {
+                filterProducts = filterProducts
+                    .Where(p => p.Sold > 0)
+                    .OrderByDescending(p => p.Sold)
+                    .ToList(); 
             }
 
             return filterProducts
