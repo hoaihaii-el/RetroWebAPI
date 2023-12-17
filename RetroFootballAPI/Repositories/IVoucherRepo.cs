@@ -9,7 +9,7 @@ namespace RetroFootballAPI.Repositories
         Task<Voucher> Update(Voucher voucher);
         Task<Voucher> Delete(string voucherID);
         Task<IEnumerable<Voucher>> GetAll();
-        Task<IEnumerable<Voucher>> GetAvailable();
+        Task<IEnumerable<Voucher>> Filter(string param);
         Task<Voucher> GetById(string voucherID);
         Task<Voucher> GetVoucherApplied(string productID);
     }

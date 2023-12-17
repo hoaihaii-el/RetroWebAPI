@@ -66,12 +66,24 @@ namespace RetroFootballAPI.Services
             return await _context.Voucher.ToListAsync();
         }
 
-        public async Task<IEnumerable<Voucher>> GetAvailable()
+        public async Task<IEnumerable<Voucher>> Filter(string param)
         {
-            return await _context.Voucher
-                .Where(v => v.DateBegin <= DateTime.Now && 
-                            v.DateEnd >= DateTime.Now)
-                .ToListAsync();
+            switch (param)
+            {
+                case "New":
+                    return await _context.Voucher
+                        .Where(v => v.DateBegin <= DateTime.Now &&
+                                    v.DateEnd >= DateTime.Now)
+                        .OrderByDescending(v => v.DateEnd)
+                        .ToListAsync();
+                default: //almost expire
+                    return await _context.Voucher
+                        .Where(v => v.DateBegin <= DateTime.Now &&
+                                    v.DateEnd >= DateTime.Now &&
+                                    DateTime.Now.AddDays(3) >= v.DateEnd)
+                        .OrderBy(v => v.DateEnd)
+                        .ToListAsync();
+            }
         }
 
         public async Task<Voucher> GetById(string voucherID)

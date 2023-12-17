@@ -1,8 +1,8 @@
-﻿using RetroFootballAPI.Models;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 
 namespace RetroFootballAPI.Controllers
 {
@@ -17,7 +17,7 @@ namespace RetroFootballAPI.Controllers
             _repo = repo;
         }
 
-        [Authorize]
+        [Authorize(Roles = AppRole.Admin)]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAll()
         {
@@ -25,10 +25,10 @@ namespace RetroFootballAPI.Controllers
         }
 
         [Authorize]
-        [HttpGet("get-available")]
-        public async Task<IActionResult> GetAvailable()
+        [HttpGet("filter-by")]
+        public async Task<IActionResult> Filter(string param)
         {
-            return Ok(await _repo.GetAvailable());
+            return Ok(await _repo.Filter(param));
         }
 
         [Authorize]
