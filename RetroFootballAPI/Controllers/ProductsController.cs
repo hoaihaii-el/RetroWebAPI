@@ -125,6 +125,18 @@ namespace RetroFootballAPI.Controllers
                 );
         }
 
+        [HttpGet("get-by-league/{leagueName}")]
+        public async Task<IActionResult> GetByLeague(string leagueName)
+        {
+            return Ok(await _repo.GetByLeage(leagueName));
+        }
+
+        [HttpGet("get-by-nation/{nationContinent}")]
+        public async Task<IActionResult> GetByNation(string nationContinent)
+        {
+            return Ok(await _repo.GetByNation(nationContinent));
+        }
+
         [HttpGet("get-by-search/{value}/{page}/{productPerPage}")]
         public async Task<IActionResult> GetBySearch(string value, int page, int productPerPage)
         {

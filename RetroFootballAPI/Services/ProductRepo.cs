@@ -409,7 +409,8 @@ namespace RetroFootballAPI.Services
         {
             return await _context.OrderDetails
                 .Where(p => p.ProductID == productID)
-                .CountAsync();
+                .Select(p => p.Quantity)
+                .SumAsync();
         }
 
         private async Task<string> AutoID()
@@ -421,7 +422,7 @@ namespace RetroFootballAPI.Services
                 .Select(v => v.ID)
                 .FirstOrDefaultAsync();
 
-            if (maxID == null)
+            if (string.IsNullOrEmpty(maxID))
             {
                 return ID;
             }
@@ -501,7 +502,7 @@ namespace RetroFootballAPI.Services
                 case "SouthAmerica":
                     nationTeams = Teams.SouthAmericanNationalTeams;
                     break;
-                default:
+                case "NorthAmerica":
                     nationTeams = Teams.NorthAmericanNationalTeams;
                     break;
             }

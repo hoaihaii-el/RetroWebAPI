@@ -20,14 +20,26 @@ namespace RetroFootballAPI.Services
             var order = new Order
             {
                 CustomerID = orderVM.CustomerID,
-                TimeCreate = orderVM.TimeCreate,
+                TimeCreate = DateTime.Now,
                 Value = orderVM.Value,
                 PayMethod = orderVM.PayMethod,
-                DeliveryDate = orderVM.DeliveryDate,
                 DeliveryMethod = orderVM.DeliveryMethod,
                 Note = orderVM.Note,
                 Status = "Payment"
             };
+
+            switch (orderVM.DeliveryMethod?.ToUpper())
+            {
+                case "NORMAL":
+                    order.DeliveryDate = DateTime.Now.AddDays(4);
+                    break;
+                case "EXPRESS":
+                    order.DeliveryDate = DateTime.Now.AddDays(2);
+                    break;
+                case "SAMEDAY":
+                    order.DeliveryDate = DateTime.Now.AddDays(1);
+                    break;
+            }
 
             var customer = await _context.Customers.FindAsync(orderVM.CustomerID);
 
