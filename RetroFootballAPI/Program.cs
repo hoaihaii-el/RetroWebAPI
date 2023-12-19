@@ -63,6 +63,7 @@ namespace RetroFootballAPI
             builder.Services.AddScoped<IWishListRepo, WishListRepo>();
             builder.Services.AddScoped<IAccountRepo, AccountRepo>();
             builder.Services.AddScoped<IChatRepo, ChatRepo>();
+            builder.Services.AddScoped<IStatRepo, StatRepo>();
 
             builder.Services.AddSingleton<JWTManager>();
             builder.Services.AddSingleton<UploadImage>();
