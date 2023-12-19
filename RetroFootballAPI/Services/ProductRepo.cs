@@ -262,13 +262,14 @@ namespace RetroFootballAPI.Services
         {
             var filterProducts = await _context.Products.ToListAsync();
 
-            if (club)
+            if (club && !nation)
             {
                 filterProducts = filterProducts
                     .Where(p => p.Club != "None")
                     .ToList();
             }
-            if (nation)
+            else
+            if (nation && !club)
             {
                 filterProducts = filterProducts
                     .Where(p => p.Nation != "None")
@@ -375,6 +376,14 @@ namespace RetroFootballAPI.Services
             {
                 product.Point = await GetAvgPoint(product.ID);
                 product.Sold = await Sold(product.ID);
+                if (product.Club != "None")
+                {
+                    product.GroupName = GetGroupName(product.Club, true);
+                }
+                else
+                {
+                    product.GroupName = GetGroupName(product.Nation, false);
+                }
             }
 
             if (sortBy == "TopSelling")
@@ -445,29 +454,12 @@ namespace RetroFootballAPI.Services
         {
             var products = await _context.Products.ToListAsync();
 
-            var leageTeams = new List<string>();
-
-            switch (leageName)
-            {
-                case "Premier":
-                    leageTeams = Teams.PremierLeagueTeams;
-                    break;
-                case "Laliga":
-                    leageTeams = Teams.LaLigaTeams;
-                    break;
-                case "Seria":
-                    leageTeams = Teams.SerieATeams;
-                    break;
-                case "Bundesliga":
-                    leageTeams = Teams.BundesligaTeams;
-                    break;
-                case "Ligue1":
-                    leageTeams = Teams.Ligue1Teams;
-                    break;
-                default:
-                    leageTeams = Teams.VLeagueTeams;
-                    break;
-            }
+            var leageTeams = (leageName == "Bundesliga") ? Teams.BundesligaTeams :
+                             (leageName == "Premier") ? Teams.PremierLeagueTeams :
+                             (leageName == "Laliga") ? Teams.LaLigaTeams :
+                             (leageName == "Ligue1") ? Teams.Ligue1Teams :
+                             (leageName == "SerieA") ? Teams.SerieATeams :
+                             Teams.VLeagueTeams;
 
             var result = new List<Product>();
 
@@ -486,26 +478,12 @@ namespace RetroFootballAPI.Services
         {
             var products = await _context.Products.ToListAsync();
 
-            var nationTeams = new List<string>();
-
-            switch (nationContinent)
-            {
-                case "Europe":
-                    nationTeams = Teams.EuropeanNationalTeams;
-                    break;
-                case "Asia":
-                    nationTeams = Teams.AsianNationalTeams;
-                    break;
-                case "Africa":
-                    nationTeams = Teams.AfricanNationalTeams;
-                    break;
-                case "SouthAmerica":
-                    nationTeams = Teams.SouthAmericanNationalTeams;
-                    break;
-                case "NorthAmerica":
-                    nationTeams = Teams.NorthAmericanNationalTeams;
-                    break;
-            }
+            var nationTeams =
+                (nationContinent == "SouthAmerica") ? Teams.SouthAmericanNationalTeams :
+                (nationContinent == "NorthAmerica") ? Teams.NorthAmericanNationalTeams :
+                (nationContinent == "Africa") ? Teams.AfricanNationalTeams :
+                (nationContinent == "Europe") ? Teams.EuropeanNationalTeams :
+                Teams.AsianNationalTeams;
 
             var result = new List<Product>();
 
@@ -518,6 +496,52 @@ namespace RetroFootballAPI.Services
             }
 
             return result;
+        }
+
+        public string GetGroupName(string name, bool club)
+        {
+            if (club)
+            {
+                if (Teams.PremierLeagueTeams.Contains(name))
+                {
+                    return "Premier League";
+                }
+
+                if (Teams.LaLigaTeams.Contains(name))
+                {
+                    return "Laliga";
+                }
+
+                if (Teams.BundesligaTeams.Contains(name))
+                {
+                    return "Bundesliga";
+                }
+
+                if (Teams.SerieATeams.Contains(name))
+                {
+                    return "Serie A";
+                }
+                return "Ligue 1";
+            }
+            else
+            {
+                if (Teams.EuropeanNationalTeams.Contains(name))
+                {
+                    return "Europe";
+                }
+
+                if (Teams.AsianNationalTeams.Contains(name))
+                {
+                    return "Asia";
+                }
+
+                if (Teams.SouthAmericanNationalTeams.Contains(name))
+                {
+                    return "South America";
+                }
+
+                return "North America";
+            }
         }
     }
 }
