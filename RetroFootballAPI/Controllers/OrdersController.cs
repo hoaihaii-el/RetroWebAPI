@@ -22,19 +22,15 @@ namespace RetroFootballAPI.Controllers
         }
 
         
-        [HttpGet("get-today/{type}")]
+        [HttpGet("get-orders")]
         [Authorize(Roles = AppRole.Admin)]
-        public async Task<IActionResult> GetToday(int type)
+        public async Task<IActionResult> GetOrders(
+            [FromQuery] int orderType = 0,
+            [FromQuery] int month = 0,
+            [FromQuery] string customerID = "",
+            [FromQuery] bool today = false)
         {
-            return Ok(await _repo.GetToday(type));
-        }
-
-        
-        [HttpGet("get-by-month/{month}/{type}")]
-        [Authorize(Roles = AppRole.Admin)]
-        public async Task<IActionResult> GetByMonth(int month, int type)
-        {
-            return Ok(await _repo.GetByMonth(month, type));
+            return Ok(await _repo.GetOrders(orderType, month, customerID, today));
         }
 
         

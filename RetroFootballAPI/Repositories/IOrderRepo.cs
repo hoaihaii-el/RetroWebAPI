@@ -5,9 +5,12 @@ namespace RetroFootballAPI.Repositories
 {
     public interface IOrderRepo
     {
-        Task<IEnumerable<Order>> GetToday(int type);
-        Task<IEnumerable<Order>> GetByMonth(int month, int type);
-        Task<IEnumerable<Order>> GetByCustomer(string customerID, int type);
+        Task<IEnumerable<Order>> GetOrders(
+            int orderType = 0,
+            int month = 0,
+            string customerID = "",
+            bool today = false);
+        Task<IEnumerable<Order>> GetByCustomer(string customerID, int orderType);
         Task<Order> Add(OrderVM order);
         Task<Order> UpdateStatus(int orderID);
         Task<Order> Delete(int orderID);
