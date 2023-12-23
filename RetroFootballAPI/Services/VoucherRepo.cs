@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
@@ -17,7 +16,7 @@ namespace RetroFootballAPI.Services
             _context = context;
         }
 
-        public async Task<Voucher> Add(VoucherVM model, List<string> productsApplied)
+        public async Task<Voucher> Add(VoucherVM model)
         {
             var voucher = new Voucher()
             {
@@ -28,18 +27,18 @@ namespace RetroFootballAPI.Services
                 Value = model.Value
             };
 
-            _context.Voucher.Add(voucher);
-            await _context.SaveChangesAsync();
+            var customers = await _context.Customers.ToListAsync();
 
-            foreach (var productID in productsApplied)
+            foreach (var customer in customers)
             {
                 _context.VoucherApplied.Add(new VoucherApplied
                 {
                     VoucherID = voucher.ID,
-                    ProductID = productID
+                    CustomerID = customer.ID
                 });
             }
 
+            _context.Voucher.Add(voucher);
             await _context.SaveChangesAsync();
 
             return voucher;
@@ -66,19 +65,26 @@ namespace RetroFootballAPI.Services
             return await _context.Voucher.ToListAsync();
         }
 
-        public async Task<IEnumerable<Voucher>> Filter(string param)
+        public async Task<IEnumerable<Voucher>> Filter(string param, string customerID)
         {
+            var vouchers = await _context.VoucherApplied
+                .Where(v => v.CustomerID == customerID)
+                .Select(v => v.VoucherID) 
+                .ToListAsync();
+
             switch (param)
             {
                 case "New":
                     return await _context.Voucher
-                        .Where(v => v.DateBegin <= DateTime.Now &&
+                        .Where(v => vouchers.Contains(v.ID) &&
+                                    v.DateBegin <= DateTime.Now &&
                                     v.DateEnd >= DateTime.Now)
                         .OrderByDescending(v => v.DateEnd)
                         .ToListAsync();
                 default: //almost expire
                     return await _context.Voucher
-                        .Where(v => v.DateBegin <= DateTime.Now &&
+                        .Where(v => vouchers.Contains(v.ID) &&
+                                    v.DateBegin <= DateTime.Now &&
                                     v.DateEnd >= DateTime.Now &&
                                     DateTime.Now.AddDays(3) >= v.DateEnd)
                         .OrderBy(v => v.DateEnd)
@@ -98,10 +104,10 @@ namespace RetroFootballAPI.Services
             return voucher;
         }
 
-        public async Task<Voucher> GetVoucherApplied(string productID)
+        public async Task<Voucher> GetVoucherApplied(string customerID)
         {
             var vouchers = await _context.VoucherApplied
-                .Where(v => v.ProductID == productID)
+                .Where(v => v.CustomerID == customerID)
                 .Select(v => v.VoucherID)
                 .ToListAsync();
 

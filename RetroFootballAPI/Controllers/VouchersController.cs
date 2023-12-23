@@ -11,10 +11,12 @@ namespace RetroFootballAPI.Controllers
     public class VouchersController : ControllerBase
     {
         private readonly IVoucherRepo _repo;
+        private readonly IAccountRepo _accRepo;
 
-        public VouchersController(IVoucherRepo repo)
+        public VouchersController(IVoucherRepo repo, IAccountRepo accRepo)
         {
             _repo = repo;
+            _accRepo = accRepo;
         }
 
         [Authorize(Roles = AppRole.Admin)]
@@ -28,7 +30,9 @@ namespace RetroFootballAPI.Controllers
         [HttpGet("filter-by")]
         public async Task<IActionResult> Filter(string param)
         {
-            return Ok(await _repo.Filter(param));
+            var customer = await _accRepo.ReadMe(User);
+
+            return Ok(await _repo.Filter(param, customer.ID ?? ""));
         }
 
         [Authorize]
@@ -54,9 +58,9 @@ namespace RetroFootballAPI.Controllers
 
         [Authorize(Roles = AppRole.Admin)]
         [HttpPost("new-voucher")]
-        public async Task<IActionResult> Add([FromForm] VoucherVM voucher, [FromQuery] List<string> productsApplied)
+        public async Task<IActionResult> Add([FromForm] VoucherVM voucher)
         {
-            return Ok(await _repo.Add(voucher, productsApplied));
+            return Ok(await _repo.Add(voucher));
         }
 
         [Authorize(Roles = AppRole.Admin)]

@@ -7,5 +7,10 @@
         public string? PayMethod { get; set; }
         public string? DeliveryMethod { get; set; }
         public string? Note { get; set; }
+        public decimal? Shipping { get; set; }
+        public decimal? Discount { get; set; }
+        public string? Name { get; set; }
+        public string? Phone { get; set; }
+        public string? Address { get; set; }
     }
 }

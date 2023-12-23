@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballWeb.Repository;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using RetroFootballAPI.Resources;
+using RetroFootballAPI.StaticServices;
+using System.Runtime.InteropServices;
 
 namespace RetroFootballAPI.Services
 {
@@ -26,7 +28,7 @@ namespace RetroFootballAPI.Services
                 PayMethod = orderVM.PayMethod,
                 DeliveryMethod = orderVM.DeliveryMethod,
                 Note = orderVM.Note,
-                Status = "Payment"
+                Status = "Pending"
             };
 
             switch (orderVM.DeliveryMethod?.ToUpper())
@@ -149,9 +151,14 @@ namespace RetroFootballAPI.Services
                 return order;
             }
 
+            if (order.Customer == null)
+            {
+                var customer = await _context.Customers.FindAsync(order.CustomerID);
+                order.Customer = customer;
+            }
+
             var status = new List<string>
             {
-                "Payment",
                 "Pending",
                 "Packaging",
                 "Delivering",
@@ -162,9 +169,107 @@ namespace RetroFootballAPI.Services
 
             order.Status = status[index + 1];
 
+            var user = await _context.Users.FindAsync(order.CustomerID);
+
+            if (order.Status == "Packaging")
+            {
+                var content = await ConfirmEmailContent(order);
+
+                Gmail.SendEmail(
+                    "[HVPP SPORTS] Đơn hàng của bạn đã được xác nhận!", 
+                    content, 
+                    new List<string> { user.Email}
+                );
+            }
+
+            if (order.Status == "Delivering")
+            {
+                var content = UpdateStatusContent(order);
+
+                Gmail.SendEmail(
+                    $"[HVPP SPORTS] Cập nhật thông tin giao hàng cho đơn hàng #{order.ID}",
+                    content,
+                    new List<string> { user.Email}
+                );
+            }
+
+            if (order.Status == "Completed")
+            {
+                var content = DeliveredContent(order);
+
+                Gmail.SendEmail(
+                    $"[HVPP SPORTS] Đơn hàng #{order.ID} đã hoàn thành!",
+                    content,
+                    new List<string> { user.Email }
+                );
+            }
+
             await _context.SaveChangesAsync();
 
             return order;
+        }
+
+        private async Task<string> ConfirmEmailContent(Order order)
+        {
+            var confirmEmail = HVPPRes.ConfirmEmail;
+
+            var details = await _context.OrderDetails
+                .Where(o => o.OrderID == order.ID)
+                .ToListAsync();
+
+            decimal subTotal = 0;
+
+            foreach (var detail in details)
+            {
+                var detailContent = HVPPRes.ProductDetail;
+
+                detailContent = detailContent.Replace("{{ProductName}}", detail.Product.Name);
+                detailContent = detailContent.Replace("{{Size}}", detail.Size);
+                detailContent = detailContent.Replace("{{Image}}", detail.Product.UrlThumb);
+                detailContent = detailContent.Replace("{{Quantity}}", detail.Quantity.ToString());
+                detailContent = detailContent.Replace("{{ProductPrice}}", detail.Product.Price.ToString());
+
+                confirmEmail.Insert(confirmEmail.IndexOf("<!-- detail -->"), detailContent + "\n");
+
+                subTotal += detail.Product.Price;
+            }
+
+            confirmEmail = confirmEmail.Replace("{{CustomerName}}", order.Customer?.Name);
+            confirmEmail = confirmEmail.Replace("{{OrderID}}", order.ID.ToString());
+            confirmEmail = confirmEmail.Replace("{{SubTotal}}", subTotal.ToString());
+            confirmEmail = confirmEmail.Replace("{{Shipping}}", order.Shipping.ToString());
+            confirmEmail = confirmEmail.Replace("{{Discount}}", order.Discount.ToString());
+            confirmEmail = confirmEmail.Replace("{{Total}}", order.Value.ToString());
+            confirmEmail = confirmEmail.Replace("{{TimeCreated}}", order.TimeCreate.ToShortDateString());
+            confirmEmail = confirmEmail.Replace("{{Name}}", order.Name);
+            confirmEmail = confirmEmail.Replace("{{Phone}}", order.Phone);
+            confirmEmail = confirmEmail.Replace("{{Address}}", order.Address);
+
+            return confirmEmail;
+        }
+
+        private string UpdateStatusContent(Order order)
+        {
+            var content = HVPPRes.UpdateStatus;
+
+            content = content.Replace("{{CustomerName}}", order.Customer?.Name);
+            content = content.Replace("{{OrderID}}", order.ID.ToString());
+            content = content.Replace("{{OrderStatus}}", "Đang vận chuyển");
+            content = content.Replace("{{Total}}", order.Value.ToString());
+
+            return content;
+        }
+
+        private string DeliveredContent(Order order)
+        {
+            var content = HVPPRes.Delivered;
+
+            content = content.Replace("{{CustomerName}}", order.Customer?.Name);
+            content = content.Replace("{{OrderID}}", order.ID.ToString());
+            content = content.Replace("{{OrderStatus}}", "Đã giao hàng");
+            content = content.Replace("{{Total}}", order.Value.ToString());
+
+            return content;
         }
     }
 }

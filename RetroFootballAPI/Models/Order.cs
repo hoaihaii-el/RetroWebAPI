@@ -20,6 +20,11 @@ namespace RetroFootballAPI.Models
         public string Status { get; set; } = "Pending";
         [MaxLength(50)]
         public string? Note { get; set; }
+        public decimal? Shipping { get; set; }
+        public decimal? Discount { get; set; }
+        public string? Name { get; set; }
+        public string? Phone { get; set; }
+        public string? Address { get; set; }
 
         //optional
         public Customer? Customer { get; set; }

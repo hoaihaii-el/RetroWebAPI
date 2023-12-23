@@ -29,7 +29,7 @@ namespace RetroFootballWeb.Repository
             modelBuilder.Entity<OrderDetail>().HasKey(o => new { o.OrderID, o.ProductID, o.Size });
             modelBuilder.Entity<DeliveryInfo>().HasKey(d => new { d.CustomerID, d.Priority });
             modelBuilder.Entity<Feedback>().HasKey(f => new { f.CustomerID, f.ProductID });
-            modelBuilder.Entity<VoucherApplied>().HasKey(v => new { v.VoucherID, v.ProductID });
+            modelBuilder.Entity<VoucherApplied>().HasKey(v => new { v.VoucherID, v.CustomerID });
             base.OnModelCreating(modelBuilder);
         }
     }

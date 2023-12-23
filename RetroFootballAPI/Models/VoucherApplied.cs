@@ -7,6 +7,6 @@ namespace RetroFootballAPI.Models
         [Key, MaxLength(50), Required]
         public string? VoucherID { get; set; }
         [Key, MaxLength(50), Required]
-        public string? ProductID { get; set; }
+        public string? CustomerID { get; set; }
     }
 }

@@ -14,6 +14,7 @@ using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.Services;
 using RetroFootballAPI.StaticService;
+using RetroFootballAPI.StaticServices;
 using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
 using System.Text;
@@ -67,6 +68,7 @@ namespace RetroFootballAPI
 
             builder.Services.AddSingleton<JWTManager>();
             builder.Services.AddSingleton<UploadImage>();
+            builder.Services.AddSingleton<Gmail>();
 
             builder.Services.AddAuthentication(options =>
             {
