@@ -88,5 +88,12 @@ namespace RetroFootballAPI.Services
 
             return customer;
         }
+
+        public async Task<IEnumerable<Customer>> SearchByName(string name)
+        {
+            return await _context.Customers
+                .Where(c => c.Name.Contains(name))
+                .ToListAsync();
+        }
     }
 }

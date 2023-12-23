@@ -160,5 +160,12 @@ namespace RetroFootballAPI.Services
 
             return ID + numeric;
         }
+
+        public async Task<IEnumerable<Voucher>> SearchByName(string name)
+        {
+            return await _context.Voucher
+                .Where(v => v.Name.Contains(name))
+                .ToListAsync();
+        }
     }
 }

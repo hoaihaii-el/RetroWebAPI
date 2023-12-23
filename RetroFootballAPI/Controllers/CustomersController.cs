@@ -64,5 +64,12 @@ namespace RetroFootballAPI.Controllers
         {
             return Ok(await _repo.Delete(id));
         }
+
+        [HttpGet("search-by-name")]
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<IActionResult> Search(string name)
+        {
+            return Ok(await _repo.SearchByName(name));
+        }
     }
 }

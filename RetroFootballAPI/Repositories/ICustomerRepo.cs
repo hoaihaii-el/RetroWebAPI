@@ -11,5 +11,6 @@ namespace RetroFootballAPI.Repositories
         Task<Customer> Update(Customer customer);
         Task<Customer> UpdateAvatar(UpdateAvatarVM avatar);
         Task<Customer> Delete(string id);
+        Task<IEnumerable<Customer>> SearchByName(string name);
     }
 }

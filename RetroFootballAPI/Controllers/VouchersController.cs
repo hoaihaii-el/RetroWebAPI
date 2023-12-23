@@ -60,6 +60,13 @@ namespace RetroFootballAPI.Controllers
         }
 
         [Authorize(Roles = AppRole.Admin)]
+        [HttpGet("search-by-name")]
+        public async Task<IActionResult> Search(string name)
+        {
+            return Ok(await _repo.SearchByName(name));
+        }
+
+        [Authorize(Roles = AppRole.Admin)]
         [HttpDelete("delete/{voucherID}")]
         public async Task<IActionResult> DeleteVoucher(string voucherID)
         {
