@@ -36,6 +36,13 @@ namespace RetroFootballAPI.Controllers
         }
 
 
+        [HttpGet("get-checkout-info/{customerID}")]
+        [Authorize]
+        public async Task<IActionResult> GetCheckoutInfo(string customerID)
+        {
+            return Ok(await _repo.GetCheckoutInfo(customerID));
+        }
+
         [HttpGet("items/{customerID}")]
         [Authorize]
         public async Task<IActionResult> GetCartItems(string customerID)

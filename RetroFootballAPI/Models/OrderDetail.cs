@@ -11,8 +11,6 @@ namespace RetroFootballAPI.Models
         [Key, MaxLength(10), Required]
         public string? Size { get; set; }
         public int Quantity { get; set; }
-        [MaxLength(50)]
-        public string? VoucherID { get; set; }
 
         //optional
         public Order Order { get; set; } = new Order();

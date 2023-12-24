@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballWeb.Repository;
+using RetroFootballAPI.Responses;
 
 namespace RetroFootballAPI.Services
 {
@@ -96,6 +97,49 @@ namespace RetroFootballAPI.Services
                 .Where(c => c.CustomerID == customerID)
                 .Select(c => c.Product.Price * c.Quantity)
                 .SumAsync();
+        }
+
+        public async Task<CheckoutResponse> GetCheckoutInfo(string customerID)
+        {
+            var checkout = new CheckoutResponse();
+            checkout.Items = await GetTotalItems(customerID);
+            checkout.Total = await GetCartTotal(customerID);
+
+            var voucher = await GetVoucherApplied(customerID);
+
+            if (voucher != null)
+            {
+                checkout.Voucher = voucher;
+            }
+
+            return checkout;
+        }
+
+        public async Task<Voucher> GetVoucherApplied(string customerID)
+        {
+            var vouchers = await _context.VoucherApplied
+                .Where(v => v.CustomerID == customerID)
+                .Select(v => v.VoucherID)
+                .ToListAsync();
+
+            var maxVoucher = new Voucher();
+
+            foreach (var voucherID in vouchers)
+            {
+                var voucher = await _context.Voucher.FindAsync(voucherID);
+
+                if (voucher == null)
+                {
+                    continue;
+                }
+
+                if (voucher.Value > maxVoucher.Value)
+                {
+                    maxVoucher = voucher;
+                }
+            }
+
+            return maxVoucher;
         }
 
         public async Task<int> GetTotalItems(string customerID)

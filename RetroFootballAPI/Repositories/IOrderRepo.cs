@@ -13,6 +13,5 @@ namespace RetroFootballAPI.Repositories
         Task<IEnumerable<Order>> GetByCustomer(string customerID, int orderType);
         Task<Order> Add(OrderVM order);
         Task<Order> UpdateStatus(int orderID);
-        Task<Order> Delete(int orderID);
     }
 }

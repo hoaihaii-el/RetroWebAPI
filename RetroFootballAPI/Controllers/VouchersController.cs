@@ -43,13 +43,6 @@ namespace RetroFootballAPI.Controllers
         }
 
         [Authorize]
-        [HttpGet("get-voucher-applied/{productID}")]
-        public async Task<IActionResult> GetVoucherApplied(string productID)
-        {
-            return Ok(await _repo.GetVoucherApplied(productID));
-        }
-
-        [Authorize]
         [HttpPut("update/{voucher}")]
         public async Task<IActionResult> Update([FromForm] Voucher voucher)
         {

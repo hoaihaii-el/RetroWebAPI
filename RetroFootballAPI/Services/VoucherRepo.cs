@@ -104,33 +104,6 @@ namespace RetroFootballAPI.Services
             return voucher;
         }
 
-        public async Task<Voucher> GetVoucherApplied(string customerID)
-        {
-            var vouchers = await _context.VoucherApplied
-                .Where(v => v.CustomerID == customerID)
-                .Select(v => v.VoucherID)
-                .ToListAsync();
-
-            var maxVoucher = new Voucher();
-
-            foreach (var voucherID in vouchers)
-            {
-                var voucher = await _context.Voucher.FindAsync(voucherID);
-
-                if (voucher == null)
-                {
-                    continue;
-                }
-
-                if (voucher.Value > maxVoucher.Value)
-                {
-                    maxVoucher = voucher;
-                }
-            }
-
-            return maxVoucher;
-        }
-
         public async Task<Voucher> Update(Voucher voucher)
         {
             _context.Voucher.Update(voucher);

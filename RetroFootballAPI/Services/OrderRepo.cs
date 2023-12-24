@@ -28,7 +28,12 @@ namespace RetroFootballAPI.Services
                 PayMethod = orderVM.PayMethod,
                 DeliveryMethod = orderVM.DeliveryMethod,
                 Note = orderVM.Note,
-                Status = "Pending"
+                Status = "Pending",
+                Shipping = orderVM.Shipping,
+                Name = orderVM.Name,
+                Phone = orderVM.Phone,
+                Address = orderVM.Address,
+                IsPaid = orderVM.IsPaid
             };
 
             switch (orderVM.DeliveryMethod?.ToUpper())
@@ -52,24 +57,24 @@ namespace RetroFootballAPI.Services
             }
 
             order.Customer = customer;
-
             _context.Orders.Add(order);
 
-            await _context.SaveChangesAsync();
+            var carts = await _context.Carts
+                .Where(c => c.CustomerID == order.CustomerID)
+                .ToListAsync();
 
-            return order;
-        }
-
-        public async Task<Order> Delete(int orderID)
-        {
-            var order = await _context.Orders.FindAsync(orderID);
-
-            if (order == null)
+            foreach (var cart in carts)
             {
-                throw new KeyNotFoundException();
-            }
+                _context.OrderDetails.Add(new OrderDetail
+                {
+                    OrderID = order.ID,
+                    ProductID = cart.ProductID,
+                    Size = cart.Size,
+                    Quantity = cart.Quantity
+                });
 
-            _context.Remove(order);
+                _context.Carts.Remove(cart);
+            }
 
             await _context.SaveChangesAsync();
 
@@ -157,6 +162,12 @@ namespace RetroFootballAPI.Services
                 order.Customer = customer;
             }
 
+            if (!string.IsNullOrEmpty(order.VoucherID))
+            {
+                var voucher = await _context.Voucher.FindAsync(order.VoucherID);
+                order.Voucher = voucher;
+            }
+
             var status = new List<string>
             {
                 "Pending",
@@ -195,6 +206,7 @@ namespace RetroFootballAPI.Services
 
             if (order.Status == "Completed")
             {
+                order.IsPaid = true;
                 var content = DeliveredContent(order);
 
                 Gmail.SendEmail(
@@ -238,7 +250,14 @@ namespace RetroFootballAPI.Services
             confirmEmail = confirmEmail.Replace("{{OrderID}}", order.ID.ToString());
             confirmEmail = confirmEmail.Replace("{{SubTotal}}", subTotal.ToString());
             confirmEmail = confirmEmail.Replace("{{Shipping}}", order.Shipping.ToString());
-            confirmEmail = confirmEmail.Replace("{{Discount}}", order.Discount.ToString());
+            if (order.Voucher != null)
+            {
+                confirmEmail = confirmEmail.Replace("{{Discount}}", order.Voucher.Value.ToString());
+            }
+            else
+            {
+                confirmEmail = confirmEmail.Replace("{{Discount}}", "0");
+            }
             confirmEmail = confirmEmail.Replace("{{Total}}", order.Value.ToString());
             confirmEmail = confirmEmail.Replace("{{TimeCreated}}", order.TimeCreate.ToShortDateString());
             confirmEmail = confirmEmail.Replace("{{Name}}", order.Name);

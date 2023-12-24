@@ -50,14 +50,6 @@ namespace RetroFootballAPI.Controllers
         }
 
         
-        [HttpDelete("delete/{orderID}")]
-        [Authorize]
-        public async Task<IActionResult> Delete(int orderID)
-        {
-            return Ok(await _repo.Delete(orderID));
-        }
-
-        
         [HttpPut("update/{orderID}")]
         [Authorize]
         public async Task<IActionResult> UpdateStatus(int orderID)

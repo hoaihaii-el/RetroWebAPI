@@ -21,8 +21,7 @@ namespace RetroFootballAPI.Services
                 OrderID = detailVM.OrderID,
                 ProductID = detailVM.ProductID,
                 Size = detailVM.Size,
-                Quantity = detailVM.Quantity,
-                VoucherID = detailVM.VoucherID,
+                Quantity = detailVM.Quantity
             };
 
             var order = await _context.Orders.FindAsync(detailVM.OrderID);

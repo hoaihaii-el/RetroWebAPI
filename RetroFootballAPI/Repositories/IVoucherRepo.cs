@@ -11,7 +11,6 @@ namespace RetroFootballAPI.Repositories
         Task<IEnumerable<Voucher>> GetAll();
         Task<IEnumerable<Voucher>> Filter(string param, string customerID);
         Task<Voucher> GetById(string voucherID);
-        Task<Voucher> GetVoucherApplied(string productID);
         Task<IEnumerable<Voucher>> SearchByName(string name);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using RetroFootballAPI.Models;
+using RetroFootballAPI.Responses;
 using RetroFootballAPI.ViewModels;
 
 namespace RetroFootballAPI.Repositories
@@ -8,6 +9,7 @@ namespace RetroFootballAPI.Repositories
         Task<IEnumerable<Cart>> GetCarts(string customerID);
         Task<decimal> GetCartTotal(string customerID);
         Task<int> GetTotalItems(string customerID);
+        Task<CheckoutResponse> GetCheckoutInfo(string customerID);
         Task<Cart> AddToCart(CartVM cart);
         Task<Cart> RemoveFromCart(string customerID, string productID, string size);
         Task ClearCart(string customerID);

@@ -18,15 +18,18 @@ namespace RetroFootballAPI.Models
         public string? DeliveryMethod { get; set; }
         [MaxLength(20)]
         public string Status { get; set; } = "Pending";
-        [MaxLength(50)]
+        [MaxLength(500)]
         public string? Note { get; set; }
         public decimal? Shipping { get; set; }
-        public decimal? Discount { get; set; }
+        [MaxLength(50)]
+        public string? VoucherID { get; set; }
         public string? Name { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        public bool IsPaid { get; set; }
 
         //optional
         public Customer? Customer { get; set; }
+        public Voucher? Voucher { get; set; }
     }
 }
