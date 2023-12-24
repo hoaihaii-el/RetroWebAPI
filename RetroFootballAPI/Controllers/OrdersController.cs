@@ -46,11 +46,26 @@ namespace RetroFootballAPI.Controllers
         [Authorize]
         public async Task<IActionResult> Add([FromForm] OrderVM order)
         {
-            return Ok(await _repo.Add(order));
+            try
+            {
+                return Ok(new
+                {
+                    success = true,
+                    data = await _repo.Add(order)
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new 
+                {
+                    success = false,
+                    error = ex.Message
+                });
+            }
         }
 
         
-        [HttpPut("update/{orderID}")]
+        [HttpPut("update-status/{orderID}")]
         [Authorize]
         public async Task<IActionResult> UpdateStatus(int orderID)
         {
@@ -62,7 +77,45 @@ namespace RetroFootballAPI.Controllers
                         .SendAsync("ReceiveMessage", order);
             }
 
-            return Ok();
+            return Ok(new
+            {
+                success = true,
+                data = order
+            });
+        }
+
+
+        [HttpPost("update-payment-status/{orderID}")]
+        public async Task<IActionResult> UpdatePayment(int orderID)
+        {
+            return Ok(new
+            {
+                success = true,
+                data = await _repo.UpdatePaymentStatus(orderID)
+            });
+        }
+
+
+        [HttpDelete("cancel-order/{orderID}/{isCancelByAdmin}")]
+        [Authorize]
+        public async Task<IActionResult> CancelOrder(int orderID, bool isCancelByAdmin)
+        {
+            try
+            {
+                return Ok(new
+                {
+                    success = true,
+                    order = await _repo.Cancel(orderID, isCancelByAdmin)
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    error = ex.Message
+                });
+            }
         }
     }
 }

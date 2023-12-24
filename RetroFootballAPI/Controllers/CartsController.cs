@@ -20,7 +20,7 @@ namespace RetroFootballAPI.Controllers
 
 
         
-        [HttpGet("{customerID}")]
+        [HttpGet("get-carts/{customerID}")]
         [Authorize]
         public async Task<IActionResult> GetCarts(string customerID)
         {
