@@ -29,7 +29,7 @@ namespace RetroFootballAPI.Repositories
             int page = 1,
             int productPerPage = 8);
         Task<IEnumerable<Product>> GetBySearch(string value, int page, int productPerPage);
-        Task<IEnumerable<string>> GetByGroup(List<string> groups, bool club);
+        Task<IEnumerable<string>> GetByGroup(List<string> groups);
         Task<Product> Add(ProductVM product);
         Task<Product> Update(string productID, ProductVM product);
         Task<Product> Delete(string id);

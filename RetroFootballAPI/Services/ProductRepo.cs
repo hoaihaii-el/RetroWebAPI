@@ -466,24 +466,28 @@ namespace RetroFootballAPI.Services
             return ID + numeric;
         }
 
-        public async Task<IEnumerable<string>> GetByGroup(List<string> groups, bool club)
+        public async Task<IEnumerable<string>> GetByGroup(List<string> groups)
         {
-            if (club)
+            var products = await _context.Products.ToListAsync();
+
+            var result = new List<string>();
+
+            foreach (var product in products)
             {
-                return await _context.Products
-                    .Where(p => groups.Contains(p.GroupName))
-                    .Select(p => p.Club)
-                    .Distinct()
-                    .ToListAsync();
+                if (groups.Contains(product.GroupName))
+                {
+                    if (product.Club != "None")
+                    {
+                        result.Add(product.Club);
+                    }
+                    else
+                    {
+                        result.Add(product.Nation);
+                    }
+                }
             }
-            else
-            {
-                return await _context.Products
-                    .Where(p => groups.Contains(p.GroupName))
-                    .Select(p => p.Nation)
-                    .Distinct()
-                    .ToListAsync();
-            }
+
+            return result;
         }
 
         public string GetGroupName(string name, bool club)

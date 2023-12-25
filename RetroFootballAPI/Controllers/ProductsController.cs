@@ -128,9 +128,9 @@ namespace RetroFootballAPI.Controllers
         }
 
         [HttpGet("get-by-groups")]
-        public async Task<IActionResult> GetByLeague([FromQuery] List<string> groups, [FromQuery] bool club = false)
+        public async Task<IActionResult> GetByLeague([FromQuery] List<string> groups)
         {
-            return Ok(await _repo.GetByGroup(groups, club));
+            return Ok(await _repo.GetByGroup(groups));
         }
 
         [HttpGet("get-by-search/{value}/{page}/{productPerPage}")]
