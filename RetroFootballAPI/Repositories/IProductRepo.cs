@@ -15,6 +15,7 @@ namespace RetroFootballAPI.Repositories
         Task<IEnumerable<Product>> FilterBy(
             List<string> names,
             List<string> seasons,
+            List<string> groups,
             bool club = false,
             bool nation = false,
             decimal minPrice = 0,
@@ -28,8 +29,7 @@ namespace RetroFootballAPI.Repositories
             int page = 1,
             int productPerPage = 8);
         Task<IEnumerable<Product>> GetBySearch(string value, int page, int productPerPage);
-        Task<IEnumerable<Product>> GetByLeage(string leageName);
-        Task<IEnumerable<Product>> GetByNation(string nationName);
+        Task<IEnumerable<string>> GetByGroup(List<string> groups, bool club);
         Task<Product> Add(ProductVM product);
         Task<Product> Update(string productID, ProductVM product);
         Task<Product> Delete(string id);

@@ -27,7 +27,7 @@ namespace RetroFootballAPI.Controllers
         public async Task<IActionResult> GetOrders(
             [FromQuery] int orderType = 0,
             [FromQuery] int month = 0,
-            [FromQuery] string customerID = "",
+            [FromQuery] string customerID = "-1",
             [FromQuery] bool today = false)
         {
             return Ok(await _repo.GetOrders(orderType, month, customerID, today));

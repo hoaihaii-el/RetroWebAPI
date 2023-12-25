@@ -28,7 +28,6 @@ namespace RetroFootballAPI.Models
         public double Point { get; set; }
         [NotMapped]
         public int Sold { get; set; }
-        [NotMapped]
         public string? GroupName { get; set; } 
         public string? UrlMain { get; set; }
         public string? UrlSub1 { get; set; }

@@ -45,6 +45,15 @@ namespace RetroFootballAPI.Services
                 UrlThumb = await UploadImage.Instance.UploadAsync(productVM.UrlThumb)
             };
 
+            if (product.Club != "None")
+            {
+                product.GroupName = GetGroupName(product.Name, true);
+            }
+            else
+            {
+                product.GroupName = GetGroupName(product.Name, false);
+            }
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
@@ -247,6 +256,7 @@ namespace RetroFootballAPI.Services
         public async Task<IEnumerable<Product>> FilterBy(
             List<string> names,
             List<string> seasons,
+            List<string> groups,
             bool club = false,
             bool nation = false,
             decimal minPrice = 0,
@@ -267,6 +277,13 @@ namespace RetroFootballAPI.Services
                 filterProducts = filterProducts
                     .Where(p => p.Club != "None")
                     .ToList();
+
+                if (groups.Count > 0)
+                {
+                    filterProducts = filterProducts
+                        .Where(p => groups.Contains(p.GroupName))
+                        .ToList();
+                }
             }
             else
             if (nation && !club)
@@ -274,6 +291,13 @@ namespace RetroFootballAPI.Services
                 filterProducts = filterProducts
                     .Where(p => p.Nation != "None")
                     .ToList();
+
+                if (groups.Count > 0)
+                {
+                    filterProducts = filterProducts
+                        .Where(p => groups.Contains(p.GroupName))
+                        .ToList();
+                }
             }
 
             filterProducts = filterProducts
@@ -376,14 +400,6 @@ namespace RetroFootballAPI.Services
             {
                 product.Point = await GetAvgPoint(product.ID);
                 product.Sold = await Sold(product.ID);
-                if (product.Club != "None")
-                {
-                    product.GroupName = GetGroupName(product.Club, true);
-                }
-                else
-                {
-                    product.GroupName = GetGroupName(product.Nation, false);
-                }
             }
 
             if (sortBy == "TopSelling")
@@ -450,52 +466,24 @@ namespace RetroFootballAPI.Services
             return ID + numeric;
         }
 
-        public async Task<IEnumerable<Product>> GetByLeage(string leageName)
+        public async Task<IEnumerable<string>> GetByGroup(List<string> groups, bool club)
         {
-            var products = await _context.Products.ToListAsync();
-
-            var leageTeams = (leageName == "Bundesliga") ? Teams.BundesligaTeams :
-                             (leageName == "Premier") ? Teams.PremierLeagueTeams :
-                             (leageName == "Laliga") ? Teams.LaLigaTeams :
-                             (leageName == "Ligue1") ? Teams.Ligue1Teams :
-                             (leageName == "SerieA") ? Teams.SerieATeams :
-                             Teams.VLeagueTeams;
-
-            var result = new List<Product>();
-
-            foreach (var product in products)
+            if (club)
             {
-                if (leageTeams.Any(team => product.Name.Contains(team)))
-                {
-                    result.Add(product);
-                }
+                return await _context.Products
+                    .Where(p => groups.Contains(p.GroupName))
+                    .Select(p => p.Club)
+                    .Distinct()
+                    .ToListAsync();
             }
-
-            return result;
-        }
-
-        public async Task<IEnumerable<Product>> GetByNation(string nationContinent)
-        {
-            var products = await _context.Products.ToListAsync();
-
-            var nationTeams =
-                (nationContinent == "SouthAmerica") ? Teams.SouthAmericanNationalTeams :
-                (nationContinent == "NorthAmerica") ? Teams.NorthAmericanNationalTeams :
-                (nationContinent == "Africa") ? Teams.AfricanNationalTeams :
-                (nationContinent == "Europe") ? Teams.EuropeanNationalTeams :
-                Teams.AsianNationalTeams;
-
-            var result = new List<Product>();
-
-            foreach (var product in products)
+            else
             {
-                if (nationTeams.Any(team => product.Name.Contains(team)))
-                {
-                    result.Add(product);
-                }
+                return await _context.Products
+                    .Where(p => groups.Contains(p.GroupName))
+                    .Select(p => p.Nation)
+                    .Distinct()
+                    .ToListAsync();
             }
-
-            return result;
         }
 
         public string GetGroupName(string name, bool club)
@@ -504,7 +492,7 @@ namespace RetroFootballAPI.Services
             {
                 if (Teams.PremierLeagueTeams.Contains(name))
                 {
-                    return "Premier League";
+                    return "PremierLeague";
                 }
 
                 if (Teams.LaLigaTeams.Contains(name))
@@ -519,9 +507,9 @@ namespace RetroFootballAPI.Services
 
                 if (Teams.SerieATeams.Contains(name))
                 {
-                    return "Serie A";
+                    return "SerieA";
                 }
-                return "Ligue 1";
+                return "Ligue1";
             }
             else
             {
@@ -537,10 +525,10 @@ namespace RetroFootballAPI.Services
 
                 if (Teams.SouthAmericanNationalTeams.Contains(name))
                 {
-                    return "South America";
+                    return "SouthAmerica";
                 }
 
-                return "North America";
+                return "NorthAmerica";
             }
         }
     }

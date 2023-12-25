@@ -93,6 +93,7 @@ namespace RetroFootballAPI.Controllers
         public async Task<IActionResult> FilterBy(
             [FromQuery] List<string> names,
             [FromQuery] List<string> seasons,
+            [FromQuery] List<string> groups,
             [FromQuery] bool club = false,
             [FromQuery] bool nation = false,
             [FromQuery] decimal minPrice = 0,
@@ -110,6 +111,7 @@ namespace RetroFootballAPI.Controllers
                 await _repo.FilterBy(
                     names,
                     seasons,
+                    groups,
                     club,
                     nation,
                     minPrice,
@@ -125,16 +127,10 @@ namespace RetroFootballAPI.Controllers
                 );
         }
 
-        [HttpGet("get-by-league/{leagueName}")]
-        public async Task<IActionResult> GetByLeague(string leagueName)
+        [HttpGet("get-by-groups")]
+        public async Task<IActionResult> GetByLeague([FromQuery] List<string> groups, [FromQuery] bool club = false)
         {
-            return Ok(await _repo.GetByLeage(leagueName));
-        }
-
-        [HttpGet("get-by-nation/{nationContinent}")]
-        public async Task<IActionResult> GetByNation(string nationContinent)
-        {
-            return Ok(await _repo.GetByNation(nationContinent));
+            return Ok(await _repo.GetByGroup(groups, club));
         }
 
         [HttpGet("get-by-search/{value}/{page}/{productPerPage}")]
