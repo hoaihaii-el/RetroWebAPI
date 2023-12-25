@@ -509,7 +509,12 @@ namespace RetroFootballAPI.Services
                 {
                     return "SerieA";
                 }
-                return "Ligue1";
+                
+                if (Teams.Ligue1Teams.Contains(name))
+                {
+                    return "Ligue1";
+                }
+                return "VLeague";
             }
             else
             {
