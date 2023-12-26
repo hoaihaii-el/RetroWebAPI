@@ -278,7 +278,12 @@ namespace RetroFootballAPI.Services
                     .Where(p => p.Club != "None")
                     .ToList();
 
-                if (groups.Count > 0 && !string.IsNullOrWhiteSpace(groups[0]))
+                if (groups.Count == 1 && string.IsNullOrEmpty(groups[0]))
+                {
+
+                }
+                else
+                if (groups.Count > 0)
                 {
                     filterProducts = filterProducts
                         .Where(p => groups.Contains(p.GroupName))
@@ -292,7 +297,12 @@ namespace RetroFootballAPI.Services
                     .Where(p => p.Nation != "None")
                     .ToList();
 
-                if (groups.Count > 0 && !string.IsNullOrWhiteSpace(groups[0]))
+                if (groups.Count == 1 && string.IsNullOrEmpty(groups[0]))
+                {
+
+                }
+                else
+                if (groups.Count > 0)
                 {
                     filterProducts = filterProducts
                         .Where(p => groups.Contains(p.GroupName))
