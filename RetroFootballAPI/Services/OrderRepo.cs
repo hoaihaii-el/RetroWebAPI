@@ -154,7 +154,7 @@ namespace RetroFootballAPI.Services
         public async Task<IEnumerable<Order>> GetOrders(
             int orderType = 0,
             int month = 0,
-            string customerID = "",
+            string customerID = "-1",
             bool today = false)
         {
             var status = orderType == 0 ? "All" :
@@ -176,7 +176,7 @@ namespace RetroFootballAPI.Services
                 orders = orders.Where(o => o.TimeCreate.Month == month);
             }
 
-            if (!string.IsNullOrEmpty(customerID))
+            if (!string.IsNullOrEmpty(customerID) && customerID != "-1")
             {
                 orders = orders.Where(o => o.CustomerID == customerID);
             }

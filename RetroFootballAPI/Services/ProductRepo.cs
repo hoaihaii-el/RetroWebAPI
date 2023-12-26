@@ -257,8 +257,8 @@ namespace RetroFootballAPI.Services
             List<string> names,
             List<string> seasons,
             List<string> groups,
-            bool club = false,
-            bool nation = false,
+            bool club = true,
+            bool nation = true,
             decimal minPrice = 0,
             decimal maxPrice = 10000000,
             string sortBy = "Name",
@@ -272,30 +272,20 @@ namespace RetroFootballAPI.Services
         {
             var filterProducts = await _context.Products.ToListAsync();
 
-            if (club && !nation)
+            if (club || nation)
             {
-                filterProducts = filterProducts
-                    .Where(p => p.Club != "None")
-                    .ToList();
-
-                if (groups.Count == 1 && string.IsNullOrEmpty(groups[0]))
-                {
-
-                }
-                else
-                if (groups.Count > 0)
+                if (club && !nation)
                 {
                     filterProducts = filterProducts
-                        .Where(p => groups.Contains(p.GroupName))
+                        .Where(p => p.Club != "None")
                         .ToList();
                 }
-            }
-            else
-            if (nation && !club)
-            {
-                filterProducts = filterProducts
-                    .Where(p => p.Nation != "None")
-                    .ToList();
+                else if (!club && nation)
+                {
+                    filterProducts = filterProducts
+                        .Where(p => p.Nation != "None")
+                        .ToList();
+                }
 
                 if (groups.Count == 1 && string.IsNullOrEmpty(groups[0]))
                 {
