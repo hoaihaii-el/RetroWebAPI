@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.Responses;
@@ -6,6 +7,7 @@ using RetroFootballAPI.StaticService;
 using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace RetroFootballAPI.Services
 {
@@ -65,7 +67,7 @@ namespace RetroFootballAPI.Services
         {
             var user = new AppUser
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = await AutoID(),
                 UserName = register.UserName,
                 Email = register.Email,
                 PhoneNumber = register.Phone
@@ -131,7 +133,7 @@ namespace RetroFootballAPI.Services
         {
             var admin = new AppUser
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = "admin" + Guid.NewGuid().ToString(),
                 UserName = register.UserName,
                 Email = register.Email
             };
@@ -162,6 +164,39 @@ namespace RetroFootballAPI.Services
             }
 
             return customer;
+        }
+
+        private async Task<string> AutoID()
+        {
+            var ID = "CS0001";
+
+            var maxID = await _context.Customers
+                .OrderByDescending(v => v.ID)
+                .Select(v => v.ID)
+                .FirstOrDefaultAsync();
+
+            if (string.IsNullOrEmpty(maxID))
+            {
+                return ID;
+            }
+
+            var numeric = Regex.Match(maxID, @"\d+").Value;
+
+            if (string.IsNullOrEmpty(numeric))
+            {
+                return ID;
+            }
+
+            ID = "CS";
+
+            numeric = (int.Parse(numeric) + 1).ToString();
+
+            while (ID.Length + numeric.Length < 6)
+            {
+                ID += '0';
+            }
+
+            return ID + numeric;
         }
     }
 }
