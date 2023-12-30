@@ -86,9 +86,16 @@ namespace RetroFootballAPI.Services
 
         public async Task<IEnumerable<Cart>> GetCarts(string customerID)
         {
-            return await _context.Carts
+            var carts = await _context.Carts
                 .Where(c => c.CustomerID == customerID)
                 .ToListAsync();
+
+            foreach (var cart in carts)
+            {
+                cart.Product = await _context.Products.FindAsync(cart.ProductID);
+            }
+
+            return carts;
         }
 
         public async Task<decimal> GetCartTotal(string customerID)

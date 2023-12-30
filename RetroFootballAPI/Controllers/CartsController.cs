@@ -53,7 +53,7 @@ namespace RetroFootballAPI.Controllers
 
         [HttpPost("add-to-cart")]
         [Authorize]
-        public async Task<IActionResult> AddToCart([FromForm] CartVM cart)
+        public async Task<IActionResult> AddToCart(CartVM cart)
         {
             if (cart.Quantity < 1 || !ProductSize.Sizes.Contains(cart.Size ?? ""))
             {
