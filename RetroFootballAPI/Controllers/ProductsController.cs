@@ -61,7 +61,7 @@ namespace RetroFootballAPI.Controllers
 
         
         [HttpPost("new-product")]
-        [Authorize(Roles = AppRole.Admin)]
+        //[Authorize(Roles = AppRole.Admin)]
         public async Task<IActionResult> Add([FromForm] ProductVM product)
         {
             return Ok(await _repo.Add(product));

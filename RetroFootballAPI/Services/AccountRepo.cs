@@ -2,6 +2,7 @@
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.Responses;
+using RetroFootballAPI.StaticService;
 using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
 using System.Security.Claims;
@@ -60,7 +61,7 @@ namespace RetroFootballAPI.Services
             };
         }
 
-        public async Task<CustomerVM> Register(Register register)
+        public async Task<Customer> Register(Register register)
         {
             var user = new AppUser
             {
@@ -75,6 +76,8 @@ namespace RetroFootballAPI.Services
                 ID = user.Id,
                 Name = user.UserName,
                 Phone = user.PhoneNumber,
+                Address = "",
+                DateBirth = DateTime.MinValue,
                 Avatar = "https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg"
             };
 
@@ -93,14 +96,7 @@ namespace RetroFootballAPI.Services
 
             await _userManager.AddToRoleAsync(user, AppRole.Customer);
 
-            return new CustomerVM
-            {
-                ID = user.Id,
-                Name = user.UserName,
-                Email = user.Email,
-                Phone = user.PhoneNumber,
-                Avatar = customer.Avatar
-            };
+            return customer;
         }
 
         public async Task Logout()

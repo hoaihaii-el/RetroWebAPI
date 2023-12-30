@@ -26,8 +26,21 @@ namespace RetroFootballAPI.Services
         }
 
 
-        public async Task<Customer> Update(Customer customer)
+        public async Task<Customer> Update(CustomerVM customerVM)
         {
+            var customer = await _context.Customers.FindAsync(customerVM.ID);
+
+            if (customer == null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            customer.Name = customerVM.Name;
+            customer.Address = customerVM.Address;
+            customer.DateBirth = customerVM.DateBirth;
+            customer.Phone = customerVM.Phone;
+            customer.Avatar = await UploadImage.Instance.UploadAsync(customerVM.Avatar);
+
             _context.Customers.Update(customer);
 
             await _context.SaveChangesAsync();
@@ -67,24 +80,6 @@ namespace RetroFootballAPI.Services
             {
                 throw new KeyNotFoundException(id);
             }
-
-            return customer;
-        }
-
-        public async Task<Customer> UpdateAvatar(UpdateAvatarVM avatar)
-        {
-            var user = await _context.Users.Where(u => u.Email == avatar.Email).FirstOrDefaultAsync();
-
-            var customer = await _context.Customers.FindAsync(user?.Id);
-
-            if (customer == null)
-            {
-                throw new KeyNotFoundException();
-            }
-
-            customer.Avatar = await UploadImage.Instance.UploadAsync(avatar.Avatar);
-
-            _context.Customers.Update(customer);
 
             return customer;
         }
