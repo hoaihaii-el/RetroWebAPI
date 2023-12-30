@@ -19,11 +19,21 @@ namespace RetroFootballAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(Register register)
         {
-            return Ok(new
+            try
             {
-                message = "Success",
-                data = await _repo.Register(register)
-            });
+                return Ok(new
+                {
+                    message = "Success",
+                    data = await _repo.Register(register)
+                });
+            }
+            catch(Exception ex) 
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpPost("login")]
@@ -41,7 +51,7 @@ namespace RetroFootballAPI.Controllers
             }
             catch (ArgumentNullException)
             {
-                return StatusCode(StatusCodes.Status422UnprocessableEntity);
+                return NotFound("User not found!");
             }
             catch (KeyNotFoundException)
             {
@@ -98,5 +108,27 @@ namespace RetroFootballAPI.Controllers
                 access_token = result
             });
         }
+
+        [HttpPut("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(string email, string old, string newPw)
+        {
+            try
+            {
+                await _repo.ChangePassword(email, old, newPw);
+                return Ok(new
+                {
+                    message = "Success"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
+        }
+
     }
 }

@@ -65,6 +65,20 @@ namespace RetroFootballAPI.Services
 
         public async Task<Customer> Register(Register register)
         {
+            var checkMail = _userManager.FindByEmailAsync(register.Email);
+
+            if (checkMail != null)
+            {
+                throw new Exception("Email existed!");
+            }
+
+            var checkUserName = _userManager.FindByNameAsync(register.UserName);
+
+            if (checkUserName != null)
+            {
+                throw new Exception("UserName existed!");
+            }
+
             var user = new AppUser
             {
                 Id = await AutoID(),
@@ -197,6 +211,31 @@ namespace RetroFootballAPI.Services
             }
 
             return ID + numeric;
+        }
+
+        public async Task ChangePassword(string email, string oldPw, string newPw)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+
+            var pwHasher = new PasswordHasher<AppUser>();
+            if (pwHasher.VerifyHashedPassword(user, user.PasswordHash, oldPw) == PasswordVerificationResult.Failed)
+            {
+                throw new Exception("Password verified failed");
+            }
+
+            user.PasswordHash = pwHasher.HashPassword(user, newPw);
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception("Changed password failed!");
+            }
         }
     }
 }

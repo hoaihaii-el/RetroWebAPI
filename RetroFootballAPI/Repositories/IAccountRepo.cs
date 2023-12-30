@@ -11,6 +11,7 @@ namespace RetroFootballAPI.Repositories
         Task<LoginResponse> Login(Login user);
         Task<string> LoginByGoogle(string email);
         Task<Customer> ReadMe(ClaimsPrincipal claim);
+        Task ChangePassword(string email, string oldPw, string newPw);
         Task Logout();
     }
 }
