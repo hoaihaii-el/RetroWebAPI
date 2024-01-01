@@ -35,7 +35,7 @@ namespace RetroFootballAPI.Controllers
         }
 
 
-        [HttpPut("update-info/{customer}")]
+        [HttpPut("update-info")]
         [Authorize]
         public async Task<IActionResult> UpdateCustomer(CustomerVM customer)
         {
