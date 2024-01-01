@@ -1,6 +1,7 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using dotenv.net;
+using System.IO;
 
 namespace RetroFootballAPI.StaticService
 {
@@ -31,16 +32,45 @@ namespace RetroFootballAPI.StaticService
                 return string.Empty;
             }
 
-            using var stream = file.OpenReadStream();
-            var uploadParams = new ImageUploadParams
+            using (var stream = file.OpenReadStream())
             {
-                File = new FileDescription(file.FileName, stream),
-                UseFilename = true,
-                UniqueFilename = false,
-                Overwrite = true
-            };
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(file.FileName, stream),
+                    UseFilename = true,
+                    UniqueFilename = false,
+                    Overwrite = true
+                };
 
-            uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            }
+
+            return uploadResult.Url.ToString();
+        }
+
+        public async Task<string> UploadAsync(string fileName, string base64)
+        {
+            var uploadResult = new ImageUploadResult();
+
+            if (string.IsNullOrEmpty(base64))
+            {
+                return string.Empty;
+            }
+
+            byte[] bytes = Convert.FromBase64String(base64);
+
+            using (var stream = new MemoryStream(bytes))
+            {
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(fileName, stream),
+                    UseFilename = true,
+                    UniqueFilename = false,
+                    Overwrite = true
+                };
+
+                uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            }
 
             return uploadResult.Url.ToString();
         }

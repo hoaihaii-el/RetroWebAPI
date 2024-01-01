@@ -11,6 +11,6 @@ namespace RetroFootballAPI.ViewModels
         public string? Phone { get; set; }
         public string? Address { get; set; }
         public DateTime DateBirth { get; set; }
-        public IFormFile? Avatar { get; set; }
+        public string Avatar { get; set; } = "";
     }
 }
