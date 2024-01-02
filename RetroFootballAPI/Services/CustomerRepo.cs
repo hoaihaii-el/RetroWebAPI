@@ -69,7 +69,7 @@ namespace RetroFootballAPI.Services
         public async Task<IEnumerable<Customer>> GetAll()
         {
             return await _context.Customers
-                .Where(c => c.ID[0] == 'C' && c.ID[1] == 'S')
+                .Where(c => c.ID.ToLower().IndexOf("cs") == 0)
                 .ToListAsync();
         }
 
