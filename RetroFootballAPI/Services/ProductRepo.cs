@@ -410,6 +410,22 @@ namespace RetroFootballAPI.Services
                     .ToList(); 
             }
 
+            if (sortBy == "Sold")
+            {
+                if (descending)
+                {
+                    filterProducts = filterProducts
+                        .OrderByDescending(p => p.Sold)
+                        .ToList();
+                }
+                else
+                {
+                    filterProducts = filterProducts
+                        .OrderBy(p => p.Sold)
+                        .ToList();
+                }
+            }
+
             return filterProducts
                 .Skip((page - 1) * productPerPage)
                 .Take(productPerPage)
