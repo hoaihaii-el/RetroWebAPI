@@ -47,11 +47,11 @@ namespace RetroFootballAPI.Services
 
             if (product.Club != "None")
             {
-                product.GroupName = GetGroupName(product.Name, true);
+                product.GroupName = GetGroupName(product.Club, true);
             }
             else
             {
-                product.GroupName = GetGroupName(product.Name, false);
+                product.GroupName = GetGroupName(product.Nation, false);
             }
 
             _context.Products.Add(product);

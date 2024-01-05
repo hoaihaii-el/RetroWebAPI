@@ -57,11 +57,21 @@ namespace RetroFootballAPI.Services
                     break;
             }
 
-            return new RevenueResponse
+            var stat = new RevenueResponse
             {
                 Revenue = revenue,
-                Percent = Math.Round((revenue - last) * 100 / last, 2)
             };
+
+            if (last != 0)
+            {
+                stat.Percent = Math.Round((revenue - last) * 100 / last, 2);
+            }
+            else
+            {
+                stat.Percent = 0;
+            }
+
+            return stat;
         }
 
         public async Task<List<decimal>> RevenueByMonths()
