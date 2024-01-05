@@ -44,7 +44,7 @@ namespace RetroFootballAPI.Controllers
 
         [HttpPost("new-info")]
         [Authorize]
-        public async Task<ActionResult> Add([FromForm] DeliveryInfoVM info)
+        public async Task<ActionResult> Add([FromBody] DeliveryInfoVM info)
         {
             return Ok(await _repo.Add(info));
         }

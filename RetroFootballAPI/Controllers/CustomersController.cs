@@ -37,6 +37,7 @@ namespace RetroFootballAPI.Controllers
 
         [HttpPut("update-info")]
         [Authorize]
+        [Produces("application/json")]
         public async Task<IActionResult> UpdateCustomer(CustomerVM customer)
         {
             return Ok(await _repo.Update(customer));

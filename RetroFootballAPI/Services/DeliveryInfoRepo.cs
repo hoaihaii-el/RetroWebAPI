@@ -18,8 +18,8 @@ namespace RetroFootballAPI.Services
         public async Task<DeliveryInfo> Add(DeliveryInfoVM info)
         {
             var priority = await _context.DeliveryInfos
-                .Select(x => x.Priority)
-                .MaxAsync() + 1;
+            .Select(x => (int?)x.Priority)
+            .MaxAsync() + 1 ?? 0;
 
             if (priority < 1) priority = 1;
 
