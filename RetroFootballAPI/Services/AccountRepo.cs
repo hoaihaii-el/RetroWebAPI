@@ -65,14 +65,14 @@ namespace RetroFootballAPI.Services
 
         public async Task<Customer> Register(Register register)
         {
-            var checkMail = _userManager.FindByEmailAsync(register.Email);
+            var checkMail = await _userManager.FindByEmailAsync(register.Email);
 
             if (checkMail != null)
             {
                 throw new Exception("Email existed!");
             }
 
-            var checkUserName = _userManager.FindByNameAsync(register.UserName);
+            var checkUserName = await _userManager.FindByNameAsync(register.UserName);
 
             if (checkUserName != null)
             {
