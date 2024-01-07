@@ -26,6 +26,9 @@ namespace RetroFootballAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+
 
             // Connection DB
             builder.Services.AddDbContext<DataContext>(options =>

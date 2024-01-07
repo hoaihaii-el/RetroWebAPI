@@ -44,14 +44,14 @@ namespace RetroFootballAPI.Controllers
 
         [Authorize]
         [HttpPut("update/{voucher}")]
-        public async Task<IActionResult> Update([FromForm] Voucher voucher)
+        public async Task<IActionResult> Update([FromBody] Voucher voucher)
         {
             return Ok(await _repo.Update(voucher));
         }
 
         [Authorize(Roles = AppRole.Admin)]
         [HttpPost("new-voucher")]
-        public async Task<IActionResult> Add([FromForm] VoucherVM voucher)
+        public async Task<IActionResult> Add([FromBody] VoucherVM voucher)
         {
             return Ok(await _repo.Add(voucher));
         }

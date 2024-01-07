@@ -32,7 +32,7 @@ namespace RetroFootballAPI.Controllers
 
         [Authorize]
         [HttpPost("new-feedback")]
-        public async Task<ActionResult> Add([FromForm]FeedbackVM feedback)
+        public async Task<ActionResult> Add([FromBody]FeedbackVM feedback)
         {
             return Ok(await _repo.Add(feedback));
         }

@@ -39,12 +39,9 @@ namespace RetroFootballAPI.Services
             customer.Address = customerVM.Address;
             customer.DateBirth = customerVM.DateBirth;
             customer.Phone = customerVM.Phone;
-            if(customer.Avatar != "")
+            if(customerVM.Avatar != "")
             {
                 customer.Avatar = await UploadImage.Instance.UploadAsync(customer.ID + Guid.NewGuid().ToString(), customerVM.Avatar);
-            } else
-            {
-                customer.Avatar = customerVM.Avatar;
             }
 
             _context.Customers.Update(customer);

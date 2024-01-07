@@ -28,7 +28,7 @@ namespace RetroFootballAPI.Controllers
 
         [HttpPost("add-detail")]
         [Authorize]
-        public async Task<IActionResult> Add([FromForm] OrderDetailVM orderDetail)
+        public async Task<IActionResult> Add([FromBody] OrderDetailVM orderDetail)
         {
             return Ok(await _repo.Add(orderDetail));
         }

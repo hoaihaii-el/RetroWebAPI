@@ -54,7 +54,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPut("update/{productID}")]
-        public async Task<IActionResult> Update([FromForm] string productID, [FromForm] ProductVM product)
+        public async Task<IActionResult> Update([FromForm] string productID, [FromBody] ProductVM product)
         {
             return Ok(await _repo.Update(productID, product));
         }
@@ -62,7 +62,7 @@ namespace RetroFootballAPI.Controllers
         
         [HttpPost("new-product")]
         //[Authorize(Roles = AppRole.Admin)]
-        public async Task<IActionResult> Add([FromForm] ProductVM product)
+        public async Task<IActionResult> Add([FromBody] ProductVM product)
         {
             return Ok(await _repo.Add(product));
         }

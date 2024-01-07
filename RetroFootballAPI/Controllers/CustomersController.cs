@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
+using System.Diagnostics;
 
 namespace RetroFootballAPI.Controllers
 {
@@ -37,16 +38,16 @@ namespace RetroFootballAPI.Controllers
 
         [HttpPut("update-info")]
         [Authorize]
-        [Produces("application/json")]
-        public async Task<IActionResult> UpdateCustomer(CustomerVM customer)
+        public async Task<IActionResult> UpdateCustomer([FromBody] CustomerVM customer)
         {
+            Debug.WriteLine($"ID: {customer.ID}, Name: {customer.Name}, Address: {customer.Address}, DateBirth: {customer.DateBirth}, Phone: {customer.Phone}, Avatar: {customer.Avatar}");
             return Ok(await _repo.Update(customer));
         }
 
         
         [HttpPost("new-customer")]
         [Authorize(Roles = AppRole.Admin)]
-        public async Task<IActionResult> AddCustomer([FromForm] Customer customer)
+        public async Task<IActionResult> AddCustomer([FromBody] Customer customer)
         {
             return Ok(await _repo.Add(customer));
         }

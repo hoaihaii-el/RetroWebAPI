@@ -44,7 +44,7 @@ namespace RetroFootballAPI.Controllers
         
         [HttpPost("new-order")]
         [Authorize]
-        public async Task<IActionResult> Add([FromForm] OrderVM order)
+        public async Task<IActionResult> Add([FromBody] OrderVM order)
         {
             try
             {

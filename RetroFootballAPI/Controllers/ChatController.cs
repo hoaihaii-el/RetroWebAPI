@@ -31,14 +31,14 @@ namespace RetroFootballAPI.Controllers
 
         [HttpPost("add-new-room")]
         [Authorize]
-        public async Task<IActionResult> AddRoom([FromForm] ChatRoomVM room)
+        public async Task<IActionResult> AddRoom([FromBody] ChatRoomVM room)
         {
             return Ok(await _repo.AddRoom(room));
         }
 
         [HttpPost("send-message")]
         [Authorize]
-        public async Task<IActionResult> SendMessage([FromForm] MessageVM message)
+        public async Task<IActionResult> SendMessage([FromBody] MessageVM message)
         {
             if (!message.IsCustomerSend)
             {
