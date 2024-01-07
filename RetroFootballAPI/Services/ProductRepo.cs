@@ -494,11 +494,19 @@ namespace RetroFootballAPI.Services
                 {
                     if (product.Club != "None")
                     {
-                        result.Add(product.Club);
+                        if (!result.Contains(product.Club))
+                        {
+                            result.Add(product.Club);
+                        }
+                        //result.Add(product.Club);
                     }
                     else
                     {
-                        result.Add(product.Nation);
+                        if (!result.Contains(product.Nation))
+                        {
+                            result.Add(product.Nation);
+                        }
+                        //result.Add(product.Nation);
                     }
                 }
             }

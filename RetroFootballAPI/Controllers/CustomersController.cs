@@ -40,7 +40,6 @@ namespace RetroFootballAPI.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateCustomer([FromBody] CustomerVM customer)
         {
-            Debug.WriteLine($"ID: {customer.ID}, Name: {customer.Name}, Address: {customer.Address}, DateBirth: {customer.DateBirth}, Phone: {customer.Phone}, Avatar: {customer.Avatar}");
             return Ok(await _repo.Update(customer));
         }
 

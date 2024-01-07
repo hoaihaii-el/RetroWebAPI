@@ -111,11 +111,11 @@ namespace RetroFootballAPI.Controllers
 
         [HttpPut("change-password")]
         [Authorize]
-        public async Task<IActionResult> ChangePassword(string email, string old, string newPw)
+        public async Task<IActionResult> ChangePassword(ChangePassword changePassword)
         {
             try
             {
-                await _repo.ChangePassword(email, old, newPw);
+                await _repo.ChangePassword(changePassword.Email, changePassword.OldPassword, changePassword.NewPassword);
                 return Ok(new
                 {
                     message = "Success"
