@@ -72,7 +72,7 @@ namespace RetroFootballAPI.Services
         public async Task<IEnumerable<Customer>> GetAll()
         {
             return await _context.Customers
-                .Where(c => c.ID.ToLower().IndexOf("cs") == 0)
+                .Where(c => c.ID.ToLower().IndexOf("cs") >= 0)
                 .ToListAsync();
         }
 
