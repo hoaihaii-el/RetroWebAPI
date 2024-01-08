@@ -1,4 +1,6 @@
-﻿namespace RetroFootballAPI.ViewModels
+﻿using RetroFootballAPI.Models;
+
+namespace RetroFootballAPI.ViewModels
 {
     public class OrderVM
     {
@@ -12,5 +14,6 @@
         public string? Name { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        public List<CartItemVM>? SelectedProducts { get; set; }
     }
 }

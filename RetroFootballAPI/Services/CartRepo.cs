@@ -4,6 +4,7 @@ using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballWeb.Repository;
 using RetroFootballAPI.Responses;
+using System.Diagnostics;
 
 namespace RetroFootballAPI.Services
 {
@@ -165,6 +166,35 @@ namespace RetroFootballAPI.Services
             if (cart == null)
             {
                 throw new KeyNotFoundException();
+            }
+
+            var product = await _context.Products.FindAsync(cart.ProductID);
+            switch (size)
+            {
+                case "SizeS":
+                    if (product.SizeS < cart.Quantity + 1)
+                    {
+                        throw new Exception("out of stock");
+                    }
+                    break;
+                case "SizeM":
+                    if (product.SizeM < cart.Quantity + 1)
+                    {
+                        throw new Exception("out of stock");
+                    }
+                    break;
+                case "SizeL":
+                    if (product.SizeL < cart.Quantity + 1)
+                    {
+                        throw new Exception("out of stock");
+                    }
+                    break;
+                case "SizeXL":
+                    if (product.SizeXL < cart.Quantity + 1)
+                    {
+                        throw new Exception("out of stock");
+                    }
+                    break;
             }
 
             cart.Quantity++;

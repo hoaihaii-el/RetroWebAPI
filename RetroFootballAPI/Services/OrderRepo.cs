@@ -6,6 +6,7 @@ using RetroFootballWeb.Repository;
 using RetroFootballAPI.Resources;
 using RetroFootballAPI.StaticServices;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace RetroFootballAPI.Services
 {
@@ -35,6 +36,11 @@ namespace RetroFootballAPI.Services
                 Address = orderVM.Address,
                 IsPaid = false
             };
+            if(orderVM.VoucherID != "")
+            {
+                order.VoucherID = orderVM.VoucherID;
+            }
+            _context.Orders.Add(order);
 
             switch (orderVM.DeliveryMethod?.ToUpper())
             {
@@ -55,56 +61,53 @@ namespace RetroFootballAPI.Services
 
             order.Customer = customer;
             _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
 
-            var carts = await _context.Carts
-                .Where(c => c.CustomerID == order.CustomerID)
-                .ToListAsync();
-
-            foreach (var cart in carts)
+            var cartItems = orderVM.SelectedProducts;
+            foreach (var cartItem in cartItems)
             {
+                var product = await _context.Products.FindAsync(cartItem.ProductID);
                 _context.OrderDetails.Add(new OrderDetail
                 {
                     OrderID = order.ID,
-                    ProductID = cart.ProductID,
-                    Size = cart.Size,
-                    Quantity = cart.Quantity
+                    ProductID = cartItem.ProductID,
+                    Size = cartItem.Size,
+                    Quantity = cartItem.Quantity,
                 });
-
-                var product = await _context.Products.FindAsync(cart.ProductID);
 
                 if (product != null)
                 {
-                    switch (cart.Size)
+                    switch (cartItem.Size)
                     {
                         case "SizeS":
-                            product.SizeS -= cart.Quantity;
+                            product.SizeS -= cartItem.Quantity;
                             if (product.SizeS < 0)
                             {
-                                product.SizeS += cart.Quantity;
+                                product.SizeS += cartItem.Quantity;
                                 throw new Exception($"Sản phẩm {product.Name} không đủ Size S");
                             }
                             break;
                         case "SizeM":
-                            product.SizeM -= cart.Quantity;
+                            product.SizeM -= cartItem.Quantity;
                             if (product.SizeM < 0)
                             {
-                                product.SizeM += cart.Quantity;
+                                product.SizeM += cartItem.Quantity;
                                 throw new Exception($"Sản phẩm {product.Name} không đủ Size M");
                             }
                             break;
                         case "SizeL":
-                            product.SizeL -= cart.Quantity;
+                            product.SizeL -= cartItem.Quantity;
                             if (product.SizeL < 0)
                             {
-                                product.SizeL += cart.Quantity;
+                                product.SizeL += cartItem.Quantity;
                                 throw new Exception($"Sản phẩm {product.Name} không đủ Size L");
                             }
                             break;
                         case "SizeXL":
-                            product.SizeXL -= cart.Quantity;
+                            product.SizeXL -= cartItem.Quantity;
                             if (product.SizeXL < 0)
                             {
-                                product.SizeXL += cart.Quantity;
+                                product.SizeXL += cartItem.Quantity;
                                 throw new Exception($"Sản phẩm {product.Name} không đủ Size XL");
                             }
                             break;
@@ -112,15 +115,21 @@ namespace RetroFootballAPI.Services
 
                     _context.Products.Update(product);
                 }
-
-                _context.Carts.Remove(cart);
+                var singleRecord = _context.Carts.FirstOrDefault(x => x.CustomerID == orderVM.CustomerID && x.ProductID == cartItem.ProductID && x.Size == cartItem.Size);
+                if (singleRecord != null)
+                {
+                    _context.Carts.Remove(singleRecord);
+                }
             }
 
-            var voucherDetail = await _context.VoucherApplied.FindAsync(order.CustomerID, order.VoucherID);
-
-            if (voucherDetail != null)
+            if (order.VoucherID != "")
             {
-                _context.VoucherApplied.Remove(voucherDetail);
+                var voucherDetail = await _context.VoucherApplied.FindAsync(order.CustomerID, order.VoucherID);
+
+                if (voucherDetail != null)
+                {
+                    _context.VoucherApplied.Remove(voucherDetail);
+                }
             }
 
             await _context.SaveChangesAsync();

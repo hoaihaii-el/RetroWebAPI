@@ -60,9 +60,15 @@ namespace RetroFootballAPI.Services
 
         public async Task<IEnumerable<OrderDetail>> GetByOrderID(int orderID)
         {
-            return await _context.OrderDetails
+            var orders = await _context.OrderDetails
                 .Where(d => d.OrderID == orderID)
                 .ToListAsync();
+            foreach(var order in orders)
+            {
+                order.Order = await _context.Orders.FindAsync(order.OrderID);
+                order.Product = await _context.Products.FindAsync(order.ProductID);
+            }
+            return orders;
         }
     }
 }

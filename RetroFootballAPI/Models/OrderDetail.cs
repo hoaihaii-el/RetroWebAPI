@@ -13,7 +13,7 @@ namespace RetroFootballAPI.Models
         public int Quantity { get; set; }
 
         //optional
-        public Order Order { get; set; } = new Order();
-        public Product Product { get; set; } = new Product();
+        public Order Order { get; set; }
+        public Product Product { get; set; }
     }
 }
