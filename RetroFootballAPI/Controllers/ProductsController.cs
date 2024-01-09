@@ -139,7 +139,7 @@ namespace RetroFootballAPI.Controllers
             return Ok(await _repo.GetBySearch(value, page, productPerPage));
         }
 
-        [HttpGet("product-recommendation")]
+        [HttpGet("product-recommendation/{customerId}")]
         public async Task<IActionResult> RecommendProducts(string customerId)
         {
             return Ok(await _repo.RecommendProducts(customerId));
