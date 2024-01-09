@@ -513,6 +513,24 @@ namespace RetroFootballAPI.Services
 
             return result;
         }
+        public async Task<List<RecommendationVM>> RecommendProducts(string customerId)
+        {
+            List<RecommendationVM> result = new List<RecommendationVM>();
+            var allProducts = await _context.Products.ToListAsync();
+            var customerID = int.Parse(customerId.Substring(2));
+            MLModel.ModelInput sampleData;
+            foreach(var product in allProducts) {
+                sampleData = new MLModel.ModelInput()
+                {
+                    CustomerID = customerID,
+                    ProductID = int.Parse(product.ID.Substring(2))
+                };
+                var predictionResult = MLModel.Predict(sampleData);
+                result.Add(new RecommendationVM(predictionResult.Score, product));
+            }
+            result = result.OrderByDescending(x => x.Score).Take(8).ToList();
+            return result;
+        }
 
         public string GetGroupName(string name, bool club)
         {

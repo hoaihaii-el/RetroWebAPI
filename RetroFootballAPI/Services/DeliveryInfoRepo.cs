@@ -18,6 +18,7 @@ namespace RetroFootballAPI.Services
         public async Task<DeliveryInfo> Add(DeliveryInfoVM info)
         {
             var priority = await _context.DeliveryInfos
+            .Where(x => x.CustomerID == info.CustomerID)
             .Select(x => (int?)x.Priority)
             .MaxAsync() + 1 ?? 0;
 

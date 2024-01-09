@@ -33,5 +33,6 @@ namespace RetroFootballAPI.Repositories
         Task<Product> Add(ProductVM product);
         Task<Product> Update(string productID, ProductVM product);
         Task<Product> Delete(string id);
+        Task<List<RecommendationVM>> RecommendProducts(string customerId);
     }
 }
