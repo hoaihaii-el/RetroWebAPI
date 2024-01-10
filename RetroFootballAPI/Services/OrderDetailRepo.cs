@@ -63,9 +63,8 @@ namespace RetroFootballAPI.Services
             var orders = await _context.OrderDetails
                 .Where(d => d.OrderID == orderID)
                 .ToListAsync();
-            var temp = orders[0];
             OrderDetailsGetVM vm = new OrderDetailsGetVM();
-            vm.Products = new List<Product>();
+            vm.Products = new List<OrderProductVM>();
             var order = await _context.Orders.FindAsync(orderID);
             if (order != null)
             {
@@ -76,23 +75,14 @@ namespace RetroFootballAPI.Services
                 var product = await _context.Products.FindAsync(item.ProductID);
                 if (product != null)
                 {
-                    vm.Products.Add(product);
+                    var orderProduct = new OrderProductVM();
+                    orderProduct.Product = product;
+                    orderProduct.Size = item.Size;
+                    orderProduct.Quantity = item.Quantity;
+                    vm.Products.Add(orderProduct);
                 }
             }
             return vm;
-
-            //var result = orders[0];
-            //result.Products = new List<Product>();
-            //result.Order = await _context.Orders.FindAsync(orderID);
-            //foreach (var order in orders)
-            //{
-            //    var product = await _context.Products.FindAsync(order.ProductID);
-            //    if (product != null)
-            //    {
-            //        result.Products.Add(product);
-            //    }
-            //}
-            //return result;
         }
     }
 }
