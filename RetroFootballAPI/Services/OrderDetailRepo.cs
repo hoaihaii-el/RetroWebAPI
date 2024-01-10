@@ -33,7 +33,7 @@ namespace RetroFootballAPI.Services
             }
 
             detail.Order = order;
-            detail.Product = product;
+            //detail.Product = product;
 
             _context.OrderDetails.Add(detail);
 
@@ -58,17 +58,41 @@ namespace RetroFootballAPI.Services
             return order;
         }
 
-        public async Task<IEnumerable<OrderDetail>> GetByOrderID(int orderID)
+        public async Task<OrderDetailsGetVM> GetByOrderID(int orderID)
         {
             var orders = await _context.OrderDetails
                 .Where(d => d.OrderID == orderID)
                 .ToListAsync();
-            foreach(var order in orders)
+            var temp = orders[0];
+            OrderDetailsGetVM vm = new OrderDetailsGetVM();
+            vm.Products = new List<Product>();
+            var order = await _context.Orders.FindAsync(orderID);
+            if (order != null)
             {
-                order.Order = await _context.Orders.FindAsync(order.OrderID);
-                order.Product = await _context.Products.FindAsync(order.ProductID);
+                vm.Order = order;
             }
-            return orders;
+            foreach(var item in orders)
+            {
+                var product = await _context.Products.FindAsync(item.ProductID);
+                if (product != null)
+                {
+                    vm.Products.Add(product);
+                }
+            }
+            return vm;
+
+            //var result = orders[0];
+            //result.Products = new List<Product>();
+            //result.Order = await _context.Orders.FindAsync(orderID);
+            //foreach (var order in orders)
+            //{
+            //    var product = await _context.Products.FindAsync(order.ProductID);
+            //    if (product != null)
+            //    {
+            //        result.Products.Add(product);
+            //    }
+            //}
+            //return result;
         }
     }
 }
