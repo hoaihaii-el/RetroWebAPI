@@ -50,9 +50,23 @@ namespace RetroFootballAPI.Services
 
         public async Task<IEnumerable<Feedback>> GetAll(string productID)
         {
-            return await _context.Feedbacks
+            var feedbacks =  await _context.Feedbacks
                 .Where(f => f.ProductID == productID)
                 .ToListAsync();
+            foreach(var feedback in feedbacks)
+            {
+                var customer = await _context.Customers.FindAsync(feedback.CustomerID);
+                var product = await _context.Products.FindAsync(feedback.ProductID);
+                if (customer != null)
+                {
+                    feedback.Customer = customer;
+                }
+                if (product != null)
+                {
+                    feedback.Product = product;
+                }
+            }
+            return feedbacks;
         }
 
 
