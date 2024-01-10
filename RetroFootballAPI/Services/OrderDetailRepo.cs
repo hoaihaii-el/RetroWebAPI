@@ -66,6 +66,15 @@ namespace RetroFootballAPI.Services
             OrderDetailsGetVM vm = new OrderDetailsGetVM();
             vm.Products = new List<OrderProductVM>();
             var order = await _context.Orders.FindAsync(orderID);
+            if (order.VoucherID != null)
+            {
+                var voucher = await _context.Voucher.FindAsync(order.VoucherID);
+                if (voucher != null)
+                {
+                    order.Voucher = voucher;
+                }
+            }
+            
             if (order != null)
             {
                 vm.Order = order;

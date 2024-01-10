@@ -238,34 +238,34 @@ namespace RetroFootballAPI.Services
 
             var user = await _context.Users.FindAsync(order.CustomerID);
 
-            if (user != null)
-            {
-                string content = "", subject = "";
-                switch (order.Status)
-                {
-                    case "Packaging":
-                        content = await ConfirmEmailContent(order);
-                        subject = "[HVPP SPORTS] Đơn hàng của bạn đã được xác nhận!";
-                        break;
-                    case "Delivering":
-                        content = UpdateStatusContent(order);
-                        subject = $"[HVPP SPORTS] Cập nhật thông tin giao hàng cho đơn hàng #{order.ID}";
-                        break;
-                    case "Completed":
-                        content = DeliveredContent(order);
-                        subject = $"[HVPP SPORTS] Đơn hàng #{order.ID} đã hoàn thành!";
+            //if (user != null)
+            //{
+            //    string content = "", subject = "";
+            //    switch (order.Status)
+            //    {
+            //        case "Packaging":
+            //            content = await ConfirmEmailContent(order);
+            //            subject = "[HVPP SPORTS] Đơn hàng của bạn đã được xác nhận!";
+            //            break;
+            //        case "Delivering":
+            //            content = UpdateStatusContent(order);
+            //            subject = $"[HVPP SPORTS] Cập nhật thông tin giao hàng cho đơn hàng #{order.ID}";
+            //            break;
+            //        case "Completed":
+            //            content = DeliveredContent(order);
+            //            subject = $"[HVPP SPORTS] Đơn hàng #{order.ID} đã hoàn thành!";
 
-                        order.IsPaid = true;
-                        _context.Orders.Update(order);
-                        break;
-                }
+            //            order.IsPaid = true;
+            //            _context.Orders.Update(order);
+            //            break;
+            //    }
 
-                Gmail.SendEmail(
-                    subject,
-                    content,
-                    new List<string> { user.Email }
-                );
-            }
+            //    Gmail.SendEmail(
+            //        subject,
+            //        content,
+            //        new List<string> { user.Email }
+            //    );
+            //}
 
             await _context.SaveChangesAsync();
 

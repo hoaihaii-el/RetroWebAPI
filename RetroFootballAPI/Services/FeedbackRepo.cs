@@ -38,7 +38,7 @@ namespace RetroFootballAPI.Services
 
             feedback.Customer = customer;
             feedback.Product = product;
-            feedback.Media = await UploadImage.Instance.UploadAsync(feedbackVM.Media);
+            feedback.Media = await UploadImage.Instance.UploadAsync(feedback.ProductID + feedback.CustomerID + Guid.NewGuid().ToString(), feedbackVM.Media);
 
             _context.Feedbacks.Add(feedback);
 
@@ -76,7 +76,7 @@ namespace RetroFootballAPI.Services
 
             feedback.Comment = feedbackVM.Comment;
             feedback.Point = feedbackVM.Point;
-            feedback.Media = await UploadImage.Instance.UploadAsync(feedbackVM.Media);
+            feedback.Media = await UploadImage.Instance.UploadAsync(feedback.ProductID + feedback.CustomerID + Guid.NewGuid().ToString(), feedbackVM.Media);
 
             _context.Feedbacks.Update(feedback);
 
