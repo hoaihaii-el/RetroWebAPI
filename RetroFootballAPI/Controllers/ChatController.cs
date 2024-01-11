@@ -22,11 +22,11 @@ namespace RetroFootballAPI.Controllers
             _hub = hub;
         }
 
-        [HttpGet("get-messages/{roomID}")]
+        [HttpGet("get-messages/{customerID}")]
         [Authorize]
-        public async Task<IActionResult> GetAllMessages(int roomID)
+        public async Task<IActionResult> GetAllMessages(string customerID)
         {
-            return Ok(await _repo.GetAllMessages(roomID));
+            return Ok(await _repo.GetAllMessages(customerID));
         }
 
         [HttpPost("add-new-room")]

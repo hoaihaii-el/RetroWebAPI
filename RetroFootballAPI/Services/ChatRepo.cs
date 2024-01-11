@@ -83,10 +83,12 @@ namespace RetroFootballAPI.Services
             return message;
         }
 
-        public async Task<IEnumerable<Message>> GetAllMessages(int roomID)
+        public async Task<IEnumerable<Message>> GetAllMessages(string customerID)
         {
+            var room = await _context.ChatRooms.Where(r => r.CustomerID == customerID).FirstOrDefaultAsync();
+
             return await _context.Messages
-                .Where(m => m.RoomID == roomID)
+                .Where(m => m.RoomID == room.RoomID)
                 .ToListAsync();
         }
 
