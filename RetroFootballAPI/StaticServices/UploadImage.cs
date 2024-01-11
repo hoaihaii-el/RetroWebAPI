@@ -50,29 +50,36 @@ namespace RetroFootballAPI.StaticService
 
         public async Task<string> UploadAsync(string fileName, string base64)
         {
-            var uploadResult = new ImageUploadResult();
+            try
+            {
+                var uploadResult = new ImageUploadResult();
 
-            if (string.IsNullOrEmpty(base64))
+                if (string.IsNullOrEmpty(base64) || base64 == "empty")
+                {
+                    return string.Empty;
+                }
+
+                byte[] bytes = Convert.FromBase64String(base64);
+
+                using (var stream = new MemoryStream(bytes))
+                {
+                    var uploadParams = new ImageUploadParams
+                    {
+                        File = new FileDescription(fileName, stream),
+                        UseFilename = true,
+                        UniqueFilename = false,
+                        Overwrite = true
+                    };
+
+                    uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                }
+
+                return uploadResult.Url.ToString();
+            }
+            catch
             {
                 return string.Empty;
             }
-
-            byte[] bytes = Convert.FromBase64String(base64);
-
-            using (var stream = new MemoryStream(bytes))
-            {
-                var uploadParams = new ImageUploadParams
-                {
-                    File = new FileDescription(fileName, stream),
-                    UseFilename = true,
-                    UniqueFilename = false,
-                    Overwrite = true
-                };
-
-                uploadResult = await _cloudinary.UploadAsync(uploadParams);
-            }
-
-            return uploadResult.Url.ToString();
         }
     }
 }

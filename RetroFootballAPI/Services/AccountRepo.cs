@@ -99,8 +99,6 @@ namespace RetroFootballAPI.Services
 
             _context.Customers.Add(customer);
 
-            await _context.SaveChangesAsync();
-
             await _userManager.CreateAsync(user, register.Password);
 
             if (!await _roleManager.RoleExistsAsync(AppRole.Customer))
@@ -111,6 +109,16 @@ namespace RetroFootballAPI.Services
             }
 
             await _userManager.AddToRoleAsync(user, AppRole.Customer);
+
+            foreach (var team in register.Favorites)
+            {
+                _context.FavoriteTeams.Add(new FavoriteTeam
+                {
+                    CustomerID = customer.ID,
+                    TeamName = team
+                });
+            }
+            await _context.SaveChangesAsync();
 
             return customer;
         }

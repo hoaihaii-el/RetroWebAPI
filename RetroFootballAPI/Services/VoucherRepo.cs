@@ -24,7 +24,8 @@ namespace RetroFootballAPI.Services
                 Name = model.Name,
                 DateBegin = model.DateBegin,
                 DateEnd = model.DateEnd,
-                Value = model.Value
+                Value = model.Value,
+                Xoa = false
             };
 
             var customers = await _context.Customers.ToListAsync();
@@ -53,7 +54,8 @@ namespace RetroFootballAPI.Services
                 throw new KeyNotFoundException();
             }
 
-            _context.Voucher.Remove(voucher);
+            voucher.Xoa = true;
+            _context.Voucher.Update(voucher);
 
             await _context.SaveChangesAsync();
 
@@ -62,7 +64,7 @@ namespace RetroFootballAPI.Services
 
         public async Task<IEnumerable<Voucher>> GetAll()
         {
-            return await _context.Voucher.ToListAsync();
+            return await _context.Voucher.Where(v => !v.Xoa).ToListAsync();
         }
 
         public async Task<IEnumerable<Voucher>> Filter(string param, string customerID)
@@ -78,7 +80,8 @@ namespace RetroFootballAPI.Services
                     return await _context.Voucher
                         .Where(v => vouchers.Contains(v.ID) &&
                                     v.DateBegin <= DateTime.Now &&
-                                    v.DateEnd >= DateTime.Now)
+                                    v.DateEnd >= DateTime.Now
+                                    && !v.Xoa)
                         .OrderByDescending(v => v.DateEnd)
                         .ToListAsync();
                 default: //almost expire
@@ -86,6 +89,7 @@ namespace RetroFootballAPI.Services
                         .Where(v => vouchers.Contains(v.ID) &&
                                     v.DateBegin <= DateTime.Now &&
                                     v.DateEnd >= DateTime.Now &&
+                                    !v.Xoa &&
                                     DateTime.Now.AddDays(3) >= v.DateEnd)
                         .OrderBy(v => v.DateEnd)
                         .ToListAsync();
@@ -94,7 +98,7 @@ namespace RetroFootballAPI.Services
 
         public async Task<Voucher> GetById(string voucherID)
         {
-            var voucher = await _context.Voucher.FindAsync(voucherID);
+            var voucher = await _context.Voucher.Where(v => v.ID == voucherID && !v.Xoa).FirstOrDefaultAsync();
 
             if (voucher == null)
             {
@@ -104,8 +108,15 @@ namespace RetroFootballAPI.Services
             return voucher;
         }
 
-        public async Task<Voucher> Update(Voucher voucher)
+        public async Task<Voucher> Update(string voucherID, VoucherVM voucherVM)
         {
+            var voucher = await _context.Voucher.FindAsync(voucherID);
+
+            voucher.Name = voucherVM.Name;
+            voucher.DateEnd = voucherVM.DateEnd;
+            voucher.DateBegin = voucherVM.DateBegin;
+            voucher.Value = voucherVM.Value;
+
             _context.Voucher.Update(voucher);
             await _context.SaveChangesAsync();
 

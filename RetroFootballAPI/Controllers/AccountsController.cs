@@ -17,7 +17,7 @@ namespace RetroFootballAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(Register register)
+        public async Task<IActionResult> Register([FromQuery] Register register)
         {
             try
             {

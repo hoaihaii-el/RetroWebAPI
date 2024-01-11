@@ -78,7 +78,7 @@ namespace RetroFootballAPI.Services
         }
 
 
-        public async Task<Product> Update(string productID, ProductVM productVM)
+        public async Task<Product> Update(string productID, ProductVM2 productVM)
         {
             var product = await _context.Products.FindAsync(productID);
 
@@ -98,10 +98,16 @@ namespace RetroFootballAPI.Services
             product.SizeXL = productVM.SizeXL;
             product.Status = productVM.Status;
             product.Description = productVM.Description;
-            product.UrlMain = await UploadImage.Instance.UploadAsync(productVM.UrlMain);
-            product.UrlSub1 = await UploadImage.Instance.UploadAsync(productVM.UrlSub1);
-            product.UrlSub2 = await UploadImage.Instance.UploadAsync(productVM.UrlSub2);
-            product.UrlThumb = await UploadImage.Instance.UploadAsync(productVM.UrlThumb);
+            
+            var url1 = await UploadImage.Instance.UploadAsync(Guid.NewGuid().ToString(), productVM.UrlMain);
+            var url2 = await UploadImage.Instance.UploadAsync(Guid.NewGuid().ToString(), productVM.UrlSub1);
+            var url3 = await UploadImage.Instance.UploadAsync(Guid.NewGuid().ToString(), productVM.UrlSub2);
+            var url4 = await UploadImage.Instance.UploadAsync(Guid.NewGuid().ToString(), productVM.UrlThumb);
+
+            product.UrlMain = url1 == "" ? product.UrlMain : url1;
+            product.UrlSub1 = url2 == "" ? product.UrlSub1 : url2;
+            product.UrlSub2 = url3 == "" ? product.UrlSub2 : url3;
+            product.UrlThumb = url4 == "" ? product.UrlThumb : url4;
 
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
@@ -515,21 +521,64 @@ namespace RetroFootballAPI.Services
         }
         public async Task<List<RecommendationVM>> RecommendProducts(string customerId)
         {
-            List<RecommendationVM> result = new List<RecommendationVM>();
+            var result = new List<RecommendationVM>();
             var allProducts = await _context.Products.ToListAsync();
-            var customerID = int.Parse(customerId.Substring(2));
-            MLModel.ModelInput sampleData;
-            foreach(var product in allProducts) {
-                sampleData = new MLModel.ModelInput()
+
+            var checkBought = await _context.Orders.Where(o => o.CustomerID == customerId).ToListAsync();
+            if (checkBought == null || checkBought.Count <= 0)
+            {
+                var favoriteTeamsName = await _context.FavoriteTeams.Where(c => c.CustomerID == customerId).ToListAsync();
+
+                foreach (var team in favoriteTeamsName)
                 {
-                    CustomerID = customerID,
-                    ProductID = int.Parse(product.ID.Substring(2))
-                };
-                var predictionResult = MLModel.Predict(sampleData);
-                result.Add(new RecommendationVM(predictionResult.Score, product));
+                    var pds = allProducts.Where(p => p.Club?.ToLower() == team.TeamName?.ToLower()).ToList();
+
+                    foreach (var pd in pds)
+                    {
+                        result.Add(new RecommendationVM(0, pd));
+                    }
+
+                    pds = allProducts.Where(p => p.Nation?.ToLower() == team.TeamName?.ToLower()).ToList();
+                    foreach (var pd in pds)
+                    {
+                        result.Add(new RecommendationVM(0, pd));
+                    }
+                }
+
+                if (result.Count <= 0)
+                {
+                    var rand = new Random();
+                    var maxID = int.Parse(allProducts[allProducts.Count - 1].ID.Substring(2));
+                    for (int i = 0; i < 8; i++)
+                    {
+                        var index = rand.Next(1, maxID + 1);
+                        var rec = new RecommendationVM(0, allProducts[index]);
+
+                        if (!result.Contains(rec))
+                        {
+                            result.Add(rec);
+                        }
+                    }
+                }
             }
-            result = result.OrderByDescending(x => x.Score).Take(8).ToList();
-            return result;
+            else
+            {
+                var customerID = int.Parse(customerId.Substring(2));
+                MLModel1.ModelInput sampleData;
+                foreach (var product in allProducts)
+                {
+                    sampleData = new MLModel1.ModelInput()
+                    {
+                        CustomerID = customerID,
+                        ProductID = int.Parse(product.ID.Substring(2))
+                    };
+                    var predictionResult = MLModel1.Predict(sampleData);
+                    result.Add(new RecommendationVM(predictionResult.Score, product));
+                }
+                result = result.OrderByDescending(x => x.Score).ToList();
+            }
+            
+            return result.Take(8).ToList();
         }
 
         public string GetGroupName(string name, bool club)

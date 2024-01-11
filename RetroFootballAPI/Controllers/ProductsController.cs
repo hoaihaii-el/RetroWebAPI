@@ -54,7 +54,7 @@ namespace RetroFootballAPI.Controllers
 
 
         [HttpPut("update/{productID}")]
-        public async Task<IActionResult> Update([FromForm] string productID, [FromBody] ProductVM product)
+        public async Task<IActionResult> Update(string productID, ProductVM2 product)
         {
             return Ok(await _repo.Update(productID, product));
         }

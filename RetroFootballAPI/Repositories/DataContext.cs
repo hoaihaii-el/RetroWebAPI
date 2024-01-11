@@ -22,6 +22,7 @@ namespace RetroFootballWeb.Repository
         public DbSet<VoucherApplied> VoucherApplied { get; set; }
         public DbSet<ChatRoom> ChatRooms { get; set; }
         public DbSet<Message> Messages { get; set; } 
+        public DbSet<FavoriteTeam> FavoriteTeams { get; set; } 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Cart>().HasKey(c => new { c.CustomerID, c.ProductID, c.Size });
@@ -30,6 +31,7 @@ namespace RetroFootballWeb.Repository
             modelBuilder.Entity<DeliveryInfo>().HasKey(d => new { d.CustomerID, d.Priority });
             modelBuilder.Entity<Feedback>().HasKey(f => new { f.CustomerID, f.ProductID });
             modelBuilder.Entity<VoucherApplied>().HasKey(v => new { v.VoucherID, v.CustomerID });
+            modelBuilder.Entity<FavoriteTeam>().HasKey(v => new { v.CustomerID, v.TeamName });
             base.OnModelCreating(modelBuilder);
         }
     }

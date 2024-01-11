@@ -238,34 +238,37 @@ namespace RetroFootballAPI.Services
 
             var user = await _context.Users.FindAsync(order.CustomerID);
 
-            //if (user != null)
-            //{
-            //    string content = "", subject = "";
-            //    switch (order.Status)
-            //    {
-            //        case "Packaging":
-            //            content = await ConfirmEmailContent(order);
-            //            subject = "[HVPP SPORTS] Đơn hàng của bạn đã được xác nhận!";
-            //            break;
-            //        case "Delivering":
-            //            content = UpdateStatusContent(order);
-            //            subject = $"[HVPP SPORTS] Cập nhật thông tin giao hàng cho đơn hàng #{order.ID}";
-            //            break;
-            //        case "Completed":
-            //            content = DeliveredContent(order);
-            //            subject = $"[HVPP SPORTS] Đơn hàng #{order.ID} đã hoàn thành!";
+            if (user != null)
+            {
+                string content = "", subject = "";
+                switch (order.Status)
+                {
+                    case "Packaging":
+                        content = await ConfirmEmailContent(order);
+                        subject = "[HVPP SPORTS] Đơn hàng của bạn đã được xác nhận!";
+                        break;
+                    case "Delivering":
+                        content = UpdateStatusContent(order);
+                        subject = $"[HVPP SPORTS] Cập nhật thông tin giao hàng cho đơn hàng #{order.ID}";
+                        break;
+                    case "Completed":
+                        content = DeliveredContent(order);
+                        subject = $"[HVPP SPORTS] Đơn hàng #{order.ID} đã hoàn thành!";
 
-            //            order.IsPaid = true;
-            //            _context.Orders.Update(order);
-            //            break;
-            //    }
+                        order.IsPaid = true;
+                        _context.Orders.Update(order);
+                        break;
+                }
 
-            //    Gmail.SendEmail(
-            //        subject,
-            //        content,
-            //        new List<string> { user.Email }
-            //    );
-            //}
+                if (content != "")
+                {
+                    Gmail.SendEmail(
+                        subject,
+                        content,
+                        new List<string> { user.Email }
+                    );
+                }
+            }
 
             await _context.SaveChangesAsync();
 
@@ -286,11 +289,13 @@ namespace RetroFootballAPI.Services
             {
                 var detailContent = HVPPRes.ProductDetail;
 
-                detailContent = detailContent.Replace("{{ProductName}}", detail.Product.Name);
+                detail.Product = await _context.Products.FindAsync(detail.ProductID);
+
+                detailContent = detailContent.Replace("{{ProductName}}", detail.Product?.Name);
                 detailContent = detailContent.Replace("{{Size}}", detail.Size);
-                detailContent = detailContent.Replace("{{Image}}", detail.Product.UrlThumb);
+                detailContent = detailContent.Replace("{{Image}}", detail.Product?.UrlThumb);
                 detailContent = detailContent.Replace("{{Quantity}}", detail.Quantity.ToString());
-                detailContent = detailContent.Replace("{{ProductPrice}}", detail.Product.Price.ToString());
+                detailContent = detailContent.Replace("{{ProductPrice}}", detail.Product?.Price.ToString());
 
                 confirmEmail.Insert(confirmEmail.IndexOf("<!-- detail -->"), detailContent + "\n");
 

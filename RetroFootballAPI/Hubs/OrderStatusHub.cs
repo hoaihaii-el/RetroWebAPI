@@ -26,6 +26,19 @@ namespace RetroFootballAPI.Hubs
             return base.OnConnectedAsync();
         }
 
+        public async Task Connect(string customerID)
+        {
+            try
+            {
+                userConnections.Add(customerID, Context.ConnectionId);
+            }
+            catch
+            {
+                userConnections[customerID] = Context.ConnectionId;
+            }
+            await Clients.Caller.SendAsync("ReceiveMessage", "Admin", "Welcome to the chat!");
+        }
+
         public override Task OnDisconnectedAsync(Exception? exception)
         {
             Console.WriteLine($"{Context.ConnectionId} has left the ChatHub");

@@ -14,5 +14,6 @@ namespace RetroFootballAPI.Models
         [DataType(DataType.Password), Required(ErrorMessage = "Enter your Password!")]
         public string? Password { get; set; }
         public string? Phone { get; set; }
+        public List<string>? Favorites { get; set; }
     }
 }
