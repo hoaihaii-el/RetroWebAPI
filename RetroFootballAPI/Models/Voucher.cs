@@ -11,5 +11,6 @@ namespace RetroFootballAPI.Models
         public DateTime DateBegin { get; set; }
         public DateTime DateEnd { get; set; }
         public decimal Value { get; set; }
+        public bool Xoa { get; set; }
     }
 }

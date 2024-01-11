@@ -6,7 +6,7 @@ namespace RetroFootballAPI.Repositories
     public interface IVoucherRepo
     {
         Task<Voucher> Add(VoucherVM voucher);
-        Task<Voucher> Update(Voucher voucher);
+        Task<Voucher> Update(string ID, VoucherVM voucher);
         Task<Voucher> Delete(string voucherID);
         Task<IEnumerable<Voucher>> GetAll();
         Task<IEnumerable<Voucher>> Filter(string param, string customerID);

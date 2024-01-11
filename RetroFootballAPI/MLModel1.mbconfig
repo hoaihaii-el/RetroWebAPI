@@ -1,0 +1,259 @@
+﻿{
+  "Scenario": "Recommendation",
+  "DataSource": {
+    "Type": "SQL",
+    "Version": 1,
+    "ColumnProperties": [
+      {
+        "ColumnName": "CustomerID",
+        "ColumnPurpose": "User",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "ProductID",
+        "ColumnPurpose": "Item",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "Rating",
+        "ColumnPurpose": "Label",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 4
+      }
+    ],
+    "ConnectionString": "Data Source=DESKTOP-VRFDTBA\\SQLEXPRESS;Initial Catalog=RetroFootballWeb;Integrated Security=True",
+    "CommandString": "SELECT CAST([CustomerID] as REAL), CAST([ProductID] as REAL), CAST([Rating] as REAL) FROM [dbo].[RecommendDataset]",
+    "DatabaseName": "RetroFootballWeb",
+    "SelectedTableDbo": "dbo",
+    "TableName": "RecommendDataset"
+  },
+  "Environment": {
+    "Type": "LocalCPU",
+    "Version": 1
+  },
+  "RunHistory": {
+    "Version": 3,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "MatrixFactorization",
+        "Score": -0.58153672260215816,
+        "RuntimeInSeconds": 0.385,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3 * e4",
+          "e0": {
+            "OutputColumnName": "ProductID",
+            "InputColumnName": "ProductID",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e1": {
+            "OutputColumnName": "CustomerID",
+            "InputColumnName": "CustomerID",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e2": {
+            "LabelColumnName": "Rating",
+            "MatrixColumnIndexColumnName": "CustomerID",
+            "MatrixRowIndexColumnName": "ProductID",
+            "ApproximationRank": 10,
+            "LearningRate": 0.22009885590597125,
+            "NumberOfIterations": 74,
+            "Quiet": true
+          },
+          "e3": {
+            "OutputColumnName": "CustomerID",
+            "InputColumnName": "CustomerID"
+          },
+          "e4": {
+            "OutputColumnName": "ProductID",
+            "InputColumnName": "ProductID"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "MatrixFactorization",
+        "Score": -27.915351795279737,
+        "RuntimeInSeconds": 0.4,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3 * e4",
+          "e0": {
+            "OutputColumnName": "ProductID",
+            "InputColumnName": "ProductID",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e1": {
+            "OutputColumnName": "CustomerID",
+            "InputColumnName": "CustomerID",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e2": {
+            "LabelColumnName": "Rating",
+            "MatrixColumnIndexColumnName": "CustomerID",
+            "MatrixRowIndexColumnName": "ProductID",
+            "ApproximationRank": 10,
+            "LearningRate": 0.21806780380706264,
+            "NumberOfIterations": 74,
+            "Quiet": true
+          },
+          "e3": {
+            "OutputColumnName": "CustomerID",
+            "InputColumnName": "CustomerID"
+          },
+          "e4": {
+            "OutputColumnName": "ProductID",
+            "InputColumnName": "ProductID"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "MatrixFactorization",
+        "Score": -29.49629922299648,
+        "RuntimeInSeconds": 0.405,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3 * e4",
+          "e0": {
+            "OutputColumnName": "ProductID",
+            "InputColumnName": "ProductID",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e1": {
+            "OutputColumnName": "CustomerID",
+            "InputColumnName": "CustomerID",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e2": {
+            "LabelColumnName": "Rating",
+            "MatrixColumnIndexColumnName": "CustomerID",
+            "MatrixRowIndexColumnName": "ProductID",
+            "ApproximationRank": 10,
+            "LearningRate": 0.21940506990323252,
+            "NumberOfIterations": 74,
+            "Quiet": true
+          },
+          "e3": {
+            "OutputColumnName": "CustomerID",
+            "InputColumnName": "CustomerID"
+          },
+          "e4": {
+            "OutputColumnName": "ProductID",
+            "InputColumnName": "ProductID"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "MatrixFactorization",
+        "Score": -31.108713115851842,
+        "RuntimeInSeconds": 0.366,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3 * e4",
+          "e0": {
+            "OutputColumnName": "ProductID",
+            "InputColumnName": "ProductID",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e1": {
+            "OutputColumnName": "CustomerID",
+            "InputColumnName": "CustomerID",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e2": {
+            "LabelColumnName": "Rating",
+            "MatrixColumnIndexColumnName": "CustomerID",
+            "MatrixRowIndexColumnName": "ProductID",
+            "ApproximationRank": 10,
+            "LearningRate": 0.22214829459547072,
+            "NumberOfIterations": 75,
+            "Quiet": true
+          },
+          "e3": {
+            "OutputColumnName": "CustomerID",
+            "InputColumnName": "CustomerID"
+          },
+          "e4": {
+            "OutputColumnName": "ProductID",
+            "InputColumnName": "ProductID"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "MatrixFactorization",
+        "Score": -31.186393120849466,
+        "RuntimeInSeconds": 0.355,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3 * e4",
+          "e0": {
+            "OutputColumnName": "ProductID",
+            "InputColumnName": "ProductID",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e1": {
+            "OutputColumnName": "CustomerID",
+            "InputColumnName": "CustomerID",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e2": {
+            "LabelColumnName": "Rating",
+            "MatrixColumnIndexColumnName": "CustomerID",
+            "MatrixRowIndexColumnName": "ProductID",
+            "ApproximationRank": 10,
+            "LearningRate": 0.22414393786928211,
+            "NumberOfIterations": 75,
+            "Quiet": true
+          },
+          "e3": {
+            "OutputColumnName": "CustomerID",
+            "InputColumnName": "CustomerID"
+          },
+          "e4": {
+            "OutputColumnName": "ProductID",
+            "InputColumnName": "ProductID"
+          }
+        }
+      }
+    ],
+    "Estimators": {
+      "e0": "MapValueToKey",
+      "e1": "MapValueToKey",
+      "e2": "MatrixFactorization",
+      "e3": "MapKeyToValue",
+      "e4": "MapKeyToValue"
+    },
+    "Schema": "e0 * e1 * e2 * e3 * e4",
+    "MetricName": "RSquared",
+    "ModelFilePath": "E:\\HK5\\DotNet\\RetroFootballWeb\\RetroFootballAPI\\MLModel1.mlnet"
+  },
+  "Type": "TrainingConfig",
+  "Version": 4,
+  "TrainingOption": {
+    "Version": 2,
+    "Subsampling": false,
+    "Type": "RecommendationTrainingOption",
+    "TrainingTime": 100,
+    "LabelColumn": "Rating",
+    "UserIdColumn": "CustomerID",
+    "ItemIdColumn": "ProductID",
+    "ValidationOption": {
+      "Version": 0,
+      "Type": "TrainValidateSplitValidationOption",
+      "SplitRatio": 0.2
+    }
+  }
+}

@@ -4,6 +4,7 @@ using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballWeb.Repository;
 using RetroFootballAPI.StaticService;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace RetroFootballAPI.Services
 {
@@ -50,6 +51,16 @@ namespace RetroFootballAPI.Services
             feedback.Media = await UploadImage.Instance.UploadAsync(feedback.ProductID + feedback.CustomerID + Guid.NewGuid().ToString(), feedbackVM.Media);
 
             _context.Feedbacks.Add(feedback);
+
+            var pdID = int.Parse(feedback.ProductID.Substring(2));
+            var csID = int.Parse(feedback.CustomerID.Substring(2));
+            var rating = feedback.Point;
+
+            _context.Database.ExecuteSqlRaw($"IF EXISTS (SELECT * FROM RecommendDataset WHERE ProductID = '{pdID}' AND CustomerID = '{csID}') " +
+                $"BEGIN UPDATE RecommendDataset SET Rating = {rating} WHERE ProductID = '{pdID}' AND " +
+                $"CustomerID = '{csID}';END " +
+                $"ELSE BEGIN INSERT INTO RecommendDataset (CustomerID, ProductID, Rating)" +
+                $"VALUES ('{csID}', '{pdID}', {rating});END");
 
             await _context.SaveChangesAsync();
 

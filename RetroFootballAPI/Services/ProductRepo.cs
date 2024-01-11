@@ -558,15 +558,15 @@ namespace RetroFootballAPI.Services
             else
             {
                 var customerID = int.Parse(customerId.Substring(2));
-                MLModel.ModelInput sampleData;
+                MLModel1.ModelInput sampleData;
                 foreach (var product in allProducts)
                 {
-                    sampleData = new MLModel.ModelInput()
+                    sampleData = new MLModel1.ModelInput()
                     {
                         CustomerID = customerID,
                         ProductID = int.Parse(product.ID.Substring(2))
                     };
-                    var predictionResult = MLModel.Predict(sampleData);
+                    var predictionResult = MLModel1.Predict(sampleData);
                     result.Add(new RecommendationVM(predictionResult.Score, product));
                 }
                 result = result.OrderByDescending(x => x.Score).ToList();
