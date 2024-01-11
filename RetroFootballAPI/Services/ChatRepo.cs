@@ -57,7 +57,7 @@ namespace RetroFootballAPI.Services
             }
 
             newMsg.Room = room;
-            newMsg.Media = await UploadImage.Instance.UploadAsync(message.Media);
+            newMsg.Media = await UploadImage.Instance.UploadAsync(message.CustomerID + Guid.NewGuid().ToString(), message.Media);
 
             _context.Messages.Add(newMsg);
             await _context.SaveChangesAsync();
