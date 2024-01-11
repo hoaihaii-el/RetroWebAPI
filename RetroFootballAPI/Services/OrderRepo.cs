@@ -260,14 +260,14 @@ namespace RetroFootballAPI.Services
                         break;
                 }
 
-                //if (content != "")
-                //{
-                //    Gmail.SendEmail(
-                //        subject,
-                //        content,
-                //        new List<string> { user.Email }
-                //    );
-                //}
+                if (content != "")
+                {
+                    Gmail.SendEmail(
+                        subject,
+                        content,
+                        new List<string> { user.Email }
+                    );
+                }
             }
 
             await _context.SaveChangesAsync();
