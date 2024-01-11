@@ -10,5 +10,6 @@ namespace RetroFootballAPI.Repositories
         Task<Message> AddMessage(MessageVM message);
         Task<Message> ReadMessage(int messageID);
         Task<IEnumerable<string>> GetAdminsId();
+        Task<IEnumerable<ChatRoom>> GetRooms();
     }
 }

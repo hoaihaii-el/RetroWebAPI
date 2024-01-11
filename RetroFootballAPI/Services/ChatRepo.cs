@@ -37,6 +37,23 @@ namespace RetroFootballAPI.Services
             return newRoom;
         }
 
+        public async Task<IEnumerable<ChatRoom>> GetRooms()
+        {
+            var rooms = await _context.Messages.OrderByDescending(r => r.SendTime).Select(r => r.RoomID).Distinct().ToListAsync();
+
+            var result = new List<ChatRoom>();
+            foreach (var room in rooms)
+            {
+                var roomInfo = await _context.ChatRooms.Where(r => r.RoomID == room).FirstOrDefaultAsync();
+                result.Add(new ChatRoom
+                {
+                    RoomID = room ?? 0,
+                    CustomerID = roomInfo.CustomerID
+                });
+            }
+            return result;
+        }
+
         public async Task<Message> AddMessage(MessageVM message)
         {
             var newMsg = new Message

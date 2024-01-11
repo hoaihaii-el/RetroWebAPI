@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using RetroFootballAPI.Hubs;
+using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
 
@@ -20,6 +21,13 @@ namespace RetroFootballAPI.Controllers
         {
             _repo = repo;
             _hub = hub;
+        }
+
+        [HttpGet("get-all-rooms")]
+        [Authorize(Roles = AppRole.Admin)]
+        public async Task<IActionResult> GetAllRooms()
+        {
+            return Ok(await _repo.GetRooms());
         }
 
         [HttpGet("get-messages/{customerID}")]
