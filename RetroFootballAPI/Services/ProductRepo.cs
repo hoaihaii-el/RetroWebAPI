@@ -78,7 +78,7 @@ namespace RetroFootballAPI.Services
         }
 
 
-        public async Task<Product> Update(string productID, ProductVM productVM)
+        public async Task<Product> Update(string productID, ProductVM2 productVM)
         {
             var product = await _context.Products.FindAsync(productID);
 
@@ -98,10 +98,16 @@ namespace RetroFootballAPI.Services
             product.SizeXL = productVM.SizeXL;
             product.Status = productVM.Status;
             product.Description = productVM.Description;
-            product.UrlMain = await UploadImage.Instance.UploadAsync(productVM.UrlMain);
-            product.UrlSub1 = await UploadImage.Instance.UploadAsync(productVM.UrlSub1);
-            product.UrlSub2 = await UploadImage.Instance.UploadAsync(productVM.UrlSub2);
-            product.UrlThumb = await UploadImage.Instance.UploadAsync(productVM.UrlThumb);
+            
+            var url1 = await UploadImage.Instance.UploadAsync(Guid.NewGuid().ToString(), productVM.UrlMain);
+            var url2 = await UploadImage.Instance.UploadAsync(Guid.NewGuid().ToString(), productVM.UrlSub1);
+            var url3 = await UploadImage.Instance.UploadAsync(Guid.NewGuid().ToString(), productVM.UrlSub2);
+            var url4 = await UploadImage.Instance.UploadAsync(Guid.NewGuid().ToString(), productVM.UrlThumb);
+
+            product.UrlMain = url1 == "" ? product.UrlMain : url1;
+            product.UrlSub1 = url2 == "" ? product.UrlSub1 : url2;
+            product.UrlSub2 = url3 == "" ? product.UrlSub2 : url3;
+            product.UrlThumb = url4 == "" ? product.UrlThumb : url4;
 
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
