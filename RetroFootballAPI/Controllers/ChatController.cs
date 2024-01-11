@@ -40,29 +40,18 @@ namespace RetroFootballAPI.Controllers
         [Authorize]
         public async Task<IActionResult> SendMessage([FromBody] MessageVM message)
         {
+            var mess = await _repo.AddMessage(message);
+
             if (!message.IsCustomerSend)
             {
-                if (ChatHub.userConnections.ContainsKey(message.CustomerID))
-                {
-                    await _hub.Clients.Client(ChatHub.userConnections[message.CustomerID])
-                        .SendAsync("ReceiveMessage", message);
-                }
+                await _hub.Clients.All.SendAsync("ReceiveMessage", message);
             }
             else
             {
-                var adminIDs = await _repo.GetAdminsId();
-
-                foreach (var adminID in adminIDs)
-                {
-                    if (ChatHub.userConnections.ContainsKey(adminID))
-                    {
-                        await _hub.Clients.Client(ChatHub.userConnections[adminID])
-                        .SendAsync("ReceiveMessage", message);
-                    }
-                }
+                await _hub.Clients.All.SendAsync("ReceiveMessage", message);
             }
 
-            return Ok(await _repo.AddMessage(message));
+            return Ok(mess);
         }
 
         [HttpPut("read-message/{messageID}")]
