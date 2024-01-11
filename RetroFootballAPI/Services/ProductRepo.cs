@@ -515,8 +515,11 @@ namespace RetroFootballAPI.Services
         }
         public async Task<List<RecommendationVM>> RecommendProducts(string customerId)
         {
-            List<RecommendationVM> result = new List<RecommendationVM>();
+            var result = new List<RecommendationVM>();
             var allProducts = await _context.Products.ToListAsync();
+
+
+
             var customerID = int.Parse(customerId.Substring(2));
             MLModel.ModelInput sampleData;
             foreach(var product in allProducts) {

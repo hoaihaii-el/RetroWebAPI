@@ -260,12 +260,15 @@ namespace RetroFootballAPI.Services
             //            break;
             //    }
 
-            //    Gmail.SendEmail(
-            //        subject,
-            //        content,
-            //        new List<string> { user.Email }
-            //    );
-            //}
+                if (content != "")
+                {
+                    Gmail.SendEmail(
+                    subject,
+                    content,
+                    new List<string> { user.Email }
+                );
+                }
+            }
 
             await _context.SaveChangesAsync();
 
@@ -286,9 +289,11 @@ namespace RetroFootballAPI.Services
             {
                 var detailContent = HVPPRes.ProductDetail;
 
-                detailContent = detailContent.Replace("{{ProductName}}", detail.Product.Name);
+                detail.Product = await _context.Products.FindAsync(detail.ProductID);
+
+                detailContent = detailContent.Replace("{{ProductName}}", detail.Product?.Name);
                 detailContent = detailContent.Replace("{{Size}}", detail.Size);
-                detailContent = detailContent.Replace("{{Image}}", detail.Product.UrlThumb);
+                detailContent = detailContent.Replace("{{Image}}", detail.Product?.UrlThumb);
                 detailContent = detailContent.Replace("{{Quantity}}", detail.Quantity.ToString());
                 detailContent = detailContent.Replace("{{ProductPrice}}", detail.Product.Price.ToString());
 
