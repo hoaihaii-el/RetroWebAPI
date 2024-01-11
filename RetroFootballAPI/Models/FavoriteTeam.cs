@@ -4,8 +4,9 @@ namespace RetroFootballAPI.Models
 {
     public class FavoriteTeam
     {
-        [Required, MaxLength(50)]
+        [Key, MaxLength(50)]
         public string? CustomerID { get; set; }
+        [Key]
         public string? TeamName { get; set; }
     }
 }

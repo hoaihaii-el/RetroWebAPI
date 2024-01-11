@@ -518,21 +518,61 @@ namespace RetroFootballAPI.Services
             var result = new List<RecommendationVM>();
             var allProducts = await _context.Products.ToListAsync();
 
+            var checkBought = await _context.Orders.Where(o => o.CustomerID == customerId).ToListAsync();
+            if (checkBought == null || checkBought.Count <= 0)
+            {
+                var favoriteTeamsName = await _context.FavoriteTeams.Where(c => c.CustomerID == customerId).ToListAsync();
 
-
-            var customerID = int.Parse(customerId.Substring(2));
-            MLModel.ModelInput sampleData;
-            foreach(var product in allProducts) {
-                sampleData = new MLModel.ModelInput()
+                foreach (var team in favoriteTeamsName)
                 {
-                    CustomerID = customerID,
-                    ProductID = int.Parse(product.ID.Substring(2))
-                };
-                var predictionResult = MLModel.Predict(sampleData);
-                result.Add(new RecommendationVM(predictionResult.Score, product));
+                    var pds = allProducts.Where(p => p.Club?.ToLower() == team.TeamName?.ToLower()).ToList();
+
+                    foreach (var pd in pds)
+                    {
+                        result.Add(new RecommendationVM(0, pd));
+                    }
+
+                    pds = allProducts.Where(p => p.Nation?.ToLower() == team.TeamName?.ToLower()).ToList();
+                    foreach (var pd in pds)
+                    {
+                        result.Add(new RecommendationVM(0, pd));
+                    }
+                }
+
+                if (result.Count <= 0)
+                {
+                    var rand = new Random();
+                    var maxID = int.Parse(allProducts[allProducts.Count - 1].ID.Substring(2));
+                    for (int i = 0; i < 8; i++)
+                    {
+                        var index = rand.Next(1, maxID + 1);
+                        var rec = new RecommendationVM(0, allProducts[index]);
+
+                        if (!result.Contains(rec))
+                        {
+                            result.Add(rec);
+                        }
+                    }
+                }
             }
-            result = result.OrderByDescending(x => x.Score).Take(8).ToList();
-            return result;
+            else
+            {
+                var customerID = int.Parse(customerId.Substring(2));
+                MLModel.ModelInput sampleData;
+                foreach (var product in allProducts)
+                {
+                    sampleData = new MLModel.ModelInput()
+                    {
+                        CustomerID = customerID,
+                        ProductID = int.Parse(product.ID.Substring(2))
+                    };
+                    var predictionResult = MLModel.Predict(sampleData);
+                    result.Add(new RecommendationVM(predictionResult.Score, product));
+                }
+                result = result.OrderByDescending(x => x.Score).ToList();
+            }
+            
+            return result.Take(8).ToList();
         }
 
         public string GetGroupName(string name, bool club)
