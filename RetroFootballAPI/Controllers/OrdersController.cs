@@ -71,11 +71,7 @@ namespace RetroFootballAPI.Controllers
         {
             var order = await _repo.UpdateStatus(orderID);
 
-            if (OrderStatusHub.userConnections.ContainsKey(order.CustomerID ?? ""))
-            {
-                await _hub.Clients.Client(OrderStatusHub.userConnections[order.CustomerID ?? ""])
-                        .SendAsync("ReceiveMessage", order);
-            }
+            await _hub.Clients.All.SendAsync("ReceiveMessage");
 
             return Ok(new
             {
