@@ -52,7 +52,7 @@ namespace RetroFootballAPI.StaticService
         {
             var uploadResult = new ImageUploadResult();
 
-            if (string.IsNullOrEmpty(base64))
+            if (string.IsNullOrEmpty(base64) || base64 == "empty")
             {
                 return string.Empty;
             }

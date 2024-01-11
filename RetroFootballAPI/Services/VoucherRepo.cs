@@ -54,7 +54,8 @@ namespace RetroFootballAPI.Services
                 throw new KeyNotFoundException();
             }
 
-            _context.Voucher.Remove(voucher);
+            voucher.Xoa = true;
+            _context.Voucher.Update(voucher);
 
             await _context.SaveChangesAsync();
 
