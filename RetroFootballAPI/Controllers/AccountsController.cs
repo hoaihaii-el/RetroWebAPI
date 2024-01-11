@@ -80,6 +80,14 @@ namespace RetroFootballAPI.Controllers
             });
         }
 
+
+        [HttpPost("set-favorite-teams/{customerID}")]
+        public async Task<IActionResult> SetFavoriteTeams(string customerID, [FromBody] List<string> teams)
+        {
+            await _repo.AddFavoriteTeams(customerID, teams);
+            return Ok();
+        }
+
         
         [HttpGet("logout")]
         [Authorize]

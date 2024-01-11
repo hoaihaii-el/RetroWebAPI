@@ -48,7 +48,8 @@ namespace RetroFootballAPI.Services
                 result.Add(new ChatRoom
                 {
                     RoomID = room ?? 0,
-                    CustomerID = roomInfo.CustomerID
+                    CustomerID = roomInfo.CustomerID,
+                    Customer = await _context.Customers.FindAsync(roomInfo.CustomerID)
                 });
             }
             return result;

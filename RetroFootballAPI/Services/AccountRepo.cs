@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.Responses;
@@ -110,14 +111,12 @@ namespace RetroFootballAPI.Services
 
             await _userManager.AddToRoleAsync(user, AppRole.Customer);
 
-            foreach (var team in register.Favorites)
+            _context.ChatRooms.Add(new ChatRoom
             {
-                _context.FavoriteTeams.Add(new FavoriteTeam
-                {
-                    CustomerID = customer.ID,
-                    TeamName = team
-                });
-            }
+                CustomerID= customer.ID,
+                Customer = customer
+            });
+
             await _context.SaveChangesAsync();
 
             return customer;
@@ -149,6 +148,20 @@ namespace RetroFootballAPI.Services
             await _userManager.AddToRoleAsync(newUser, AppRole.Customer);
 
             return _JWTManager.GenerateToken(email, AppRole.Customer);
+        }
+
+        public async Task AddFavoriteTeams(string customerID, List<string> teams)
+        {
+            foreach (var team in teams)
+            {
+                _context.FavoriteTeams.Add(new FavoriteTeam
+                {
+                    CustomerID = customerID,
+                    TeamName = team
+                });
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task NewAdminAccount(Register register)

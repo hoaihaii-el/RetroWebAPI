@@ -13,5 +13,6 @@ namespace RetroFootballAPI.Repositories
         Task<Customer> ReadMe(ClaimsPrincipal claim);
         Task ChangePassword(string email, string oldPw, string newPw);
         Task Logout();
+        Task AddFavoriteTeams(string customerID, List<string> teams);
     }
 }
