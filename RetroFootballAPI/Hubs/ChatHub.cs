@@ -20,11 +20,20 @@ namespace RetroFootballAPI.Hubs
         {
             Console.WriteLine($"{Context.ConnectionId} has joined to ChatHub");
 
-            var userID = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            userConnections.Add(userID ?? "", Context.ConnectionId);
-
             return base.OnConnectedAsync();
+        }
+
+        public async Task Connect(string customerID)
+        {
+            try
+            {
+                userConnections.Add(customerID, Context.ConnectionId);
+            }
+            catch
+            {
+                userConnections[customerID] = Context.ConnectionId;
+            }
+            await Clients.Caller.SendAsync("ReceiveMessage", "Admin", "Welcome to the chat!");
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
@@ -32,7 +41,6 @@ namespace RetroFootballAPI.Hubs
             Console.WriteLine($"{Context.ConnectionId} has left the ChatHub");
 
             var userID = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             userConnections.Remove(userID ?? "");
 
             return base.OnDisconnectedAsync(exception);
