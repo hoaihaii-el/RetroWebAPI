@@ -88,10 +88,27 @@ namespace RetroFootballAPI.Services
                     orderProduct.Product = product;
                     orderProduct.Size = item.Size;
                     orderProduct.Quantity = item.Quantity;
+                    orderProduct.didFeedback = item.didFeedback;
+                    orderProduct.OrderID = orderID;
                     vm.Products.Add(orderProduct);
                 }
             }
             return vm;
+        }
+        public async Task<List<OrderProductVM>> getUnReviewedProducts(string customerID)
+        {
+            var orders = await _context.Orders
+                        .Where(o => o.CustomerID == customerID && o.Status == "Completed")
+                        .ToListAsync();
+            List<OrderProductVM> products = new List<OrderProductVM>();
+
+            foreach (var order in orders)
+            {
+                var item = await GetByOrderID(order.ID);
+                var filteredItems = item.Products.FindAll(item => item.didFeedback == false);
+                products.AddRange(filteredItems);
+            }
+            return products;
         }
     }
 }

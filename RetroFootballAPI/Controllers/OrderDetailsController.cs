@@ -25,6 +25,13 @@ namespace RetroFootballAPI.Controllers
             return Ok(await _repo.GetByOrderID(orderID));
         }
 
+        [HttpGet("get-unreviewed-products/{customerID}")]
+        [Authorize]
+        public async Task<IActionResult> GetUnReviewedProducts(string customerID)
+        {
+            return Ok(await _repo.getUnReviewedProducts(customerID));
+        }
+
 
         [HttpPost("add-detail")]
         [Authorize]

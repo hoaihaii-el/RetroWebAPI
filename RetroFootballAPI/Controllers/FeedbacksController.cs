@@ -23,6 +23,12 @@ namespace RetroFootballAPI.Controllers
             return Ok(await _repo.GetAll(productID));
         }
 
+        [HttpGet("get-by-customer/{customerID}")]
+        public async Task<ActionResult> GetAllByCustomerID(string customerID)
+        {
+            return Ok(await _repo.GetAllByCustomerID(customerID));
+        }
+
 
         [HttpGet("point/{productID}")]
         public async Task<IActionResult> GetAvgPoint(string productID)

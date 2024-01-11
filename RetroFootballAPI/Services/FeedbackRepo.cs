@@ -36,6 +36,15 @@ namespace RetroFootballAPI.Services
                 throw new KeyNotFoundException();
             }
 
+            var orders = await _context.OrderDetails.Where(d => d.OrderID == feedbackVM.OrderID).ToListAsync();
+            foreach(var order in orders)
+            {
+                if (order.ProductID == feedbackVM.ProductID && order.Size == feedbackVM.Size)
+                {
+                    order.didFeedback = true;
+                }
+            }
+
             feedback.Customer = customer;
             feedback.Product = product;
             feedback.Media = await UploadImage.Instance.UploadAsync(feedback.ProductID + feedback.CustomerID + Guid.NewGuid().ToString(), feedbackVM.Media);
@@ -56,11 +65,22 @@ namespace RetroFootballAPI.Services
             foreach(var feedback in feedbacks)
             {
                 var customer = await _context.Customers.FindAsync(feedback.CustomerID);
-                var product = await _context.Products.FindAsync(feedback.ProductID);
                 if (customer != null)
                 {
                     feedback.Customer = customer;
                 }
+            }
+            return feedbacks;
+        }
+
+        public async Task<IEnumerable<Feedback>> GetAllByCustomerID(string customerID)
+        {
+            var feedbacks = await _context.Feedbacks
+                .Where(f => f.CustomerID == customerID)
+                .ToListAsync();
+            foreach (var feedback in feedbacks)
+            {
+                var product = await _context.Products.FindAsync(feedback.ProductID);
                 if (product != null)
                 {
                     feedback.Product = product;

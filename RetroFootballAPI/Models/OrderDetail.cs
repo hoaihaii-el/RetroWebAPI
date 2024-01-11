@@ -11,6 +11,7 @@ namespace RetroFootballAPI.Models
         [Key, MaxLength(10), Required]
         public string? Size { get; set; }
         public int Quantity { get; set; }
+        public bool didFeedback { get; set; } = false;
 
         //optional
         public Order Order { get; set; }
