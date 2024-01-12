@@ -124,7 +124,7 @@ namespace RetroFootballAPI.Services
 
             if (order.VoucherID != "")
             {
-                var voucherDetail = await _context.VoucherApplied.FindAsync(order.CustomerID, order.VoucherID);
+                var voucherDetail = await _context.VoucherApplied.FindAsync(order.VoucherID, order.CustomerID);
 
                 if (voucherDetail != null)
                 {
@@ -418,9 +418,10 @@ namespace RetroFootballAPI.Services
                     VoucherID = order.VoucherID,
                     CustomerID = order.CustomerID
                 });
-
-                await _context.SaveChangesAsync();
             }
+
+            order.Status = "Canceled";
+            await _context.SaveChangesAsync();
 
             return order;
         }
