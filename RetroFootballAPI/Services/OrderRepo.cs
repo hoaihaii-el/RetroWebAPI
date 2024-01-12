@@ -421,6 +421,7 @@ namespace RetroFootballAPI.Services
             }
 
             order.Status = "Canceled";
+            _context.Orders.Update(order);
             await _context.SaveChangesAsync();
 
             return order;
