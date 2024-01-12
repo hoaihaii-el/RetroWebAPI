@@ -38,7 +38,6 @@ namespace RetroFootballAPI.Controllers
         }
 
         [HttpPost("add-new-room")]
-        [Authorize]
         public async Task<IActionResult> AddRoom([FromBody] ChatRoomVM room)
         {
             return Ok(await _repo.AddRoom(room));

@@ -104,13 +104,24 @@ namespace RetroFootballAPI
                 };
             });
 
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("CorsPolicy", x =>
+            //    {
+            //        x.AllowAnyOrigin()
+            //         .AllowAnyMethod()
+            //         .AllowAnyHeader();
+            //    });
+            //});
+
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy", x =>
+                options.AddPolicy("CorsPolicy", builder =>
                 {
-                    x.AllowAnyOrigin()
-                     .AllowAnyMethod()
-                     .AllowAnyHeader();
+                    builder.WithOrigins("http://localhost:3000") // Add your production origins as needed
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials();
                 });
             });
 
