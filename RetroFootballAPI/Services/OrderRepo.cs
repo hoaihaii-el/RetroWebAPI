@@ -143,7 +143,8 @@ namespace RetroFootballAPI.Services
                          orderType == 1 ? "Pending" :
                          orderType == 2 ? "Packaging" :
                          orderType == 3 ? "Delivering" :
-                         "Completed";
+                         orderType == 4 ? "Completed" :
+                         "Canceled";
 
             if (status == "All")
             {
@@ -401,27 +402,23 @@ namespace RetroFootballAPI.Services
                 }
 
                 _context.Products.Update(product);
-                _context.OrderDetails.Remove(detail);
             }
 
             if (!isCancelByAdmin)
             {
                 var voucher = await _context.Voucher.FindAsync(order.VoucherID);
 
-                if (voucher == null)
+                order.Status = "Canceled";
+                _context.Orders.Update(order);
+                if (voucher != null)
                 {
-                    return order;
+                    _context.VoucherApplied.Add(new VoucherApplied
+                    {
+                        VoucherID = order.VoucherID,
+                        CustomerID = order.CustomerID
+                    });
                 }
-
-                _context.VoucherApplied.Add(new VoucherApplied
-                {
-                    VoucherID = order.VoucherID,
-                    CustomerID = order.CustomerID
-                });
             }
-
-            order.Status = "Canceled";
-            _context.Orders.Update(order);
             await _context.SaveChangesAsync();
 
             return order;
