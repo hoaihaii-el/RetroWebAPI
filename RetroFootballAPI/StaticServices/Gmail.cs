@@ -5,8 +5,8 @@ namespace RetroFootballAPI.StaticServices
 {
     public class Gmail
     {
-        private static string _email = "hvppsports@gmail.com";
-        private static string _password = "qeaxdpkfhqpueezq";
+        private static string _email = "hoaihai.fw@gmail.com";
+        private static string _password = "jqmpzrfnzsaydzot";
 
         public static bool SendEmail(string subject, string content, List<string> toMail)
         {
