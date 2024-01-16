@@ -149,6 +149,7 @@ namespace RetroFootballAPI.Services
             if (status == "All")
             {
                 return await _context.Orders
+                    .OrderByDescending(x => x.TimeCreate)
                     .Where(o => o.CustomerID == customerID)
                     .ToListAsync();
             }
@@ -157,6 +158,7 @@ namespace RetroFootballAPI.Services
                 return await _context.Orders
                     .Where(o => o.CustomerID == customerID &&
                                 o.Status == status)
+                    .OrderByDescending(x => x.TimeCreate)
                     .ToListAsync();
             }
         }
