@@ -144,5 +144,17 @@ namespace RetroFootballAPI.Controllers
         {
             return Ok(await _repo.RecommendProducts(customerId));
         }
+
+        [HttpPost("import-products")]
+        public async Task<IActionResult> Import(WareHouseVM vm)
+        {
+            return Ok(await _repo.Import(vm));
+        }
+
+        [HttpGet("get-detail-import/{productID}")]
+        public async Task<IActionResult> GetDetails(string productID)
+        {
+            return Ok(await _repo.GetDetailImport(productID));
+        }
     }
 }

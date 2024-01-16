@@ -23,6 +23,7 @@ namespace RetroFootballWeb.Repository
         public DbSet<ChatRoom> ChatRooms { get; set; }
         public DbSet<Message> Messages { get; set; } 
         public DbSet<FavoriteTeam> FavoriteTeams { get; set; } 
+        public DbSet<WareHouse> WareHouses { get; set; } 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Cart>().HasKey(c => new { c.CustomerID, c.ProductID, c.Size });

@@ -1,5 +1,6 @@
 ﻿using Humanizer.Localisation.TimeToClockNotation;
 using RetroFootballAPI.Models;
+using RetroFootballAPI.Responses;
 using RetroFootballAPI.ViewModels;
 
 namespace RetroFootballAPI.Repositories
@@ -34,5 +35,7 @@ namespace RetroFootballAPI.Repositories
         Task<Product> Update(string productID, ProductVM2 product);
         Task<Product> Delete(string id);
         Task<List<RecommendationVM>> RecommendProducts(string customerId);
+        Task<WareHouse> Import(WareHouseVM vm);
+        Task<IEnumerable<WareHouseResponse>> GetDetailImport(string productID);
     }
 }

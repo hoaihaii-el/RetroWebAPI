@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
+using RetroFootballAPI.Responses;
 using RetroFootballAPI.StaticService;
 using RetroFootballAPI.StaticServices;
 using RetroFootballAPI.ViewModels;
@@ -630,6 +631,58 @@ namespace RetroFootballAPI.Services
 
                 return "NorthAmerica";
             }
+        }
+
+
+        public async Task<WareHouse> Import(WareHouseVM vm)
+        {
+            var newPr = new WareHouse
+            {
+                ProductID = vm.ProductID,
+                SizeS = vm.SizeS,
+                SizeM = vm.SizeM,
+                SizeL = vm.SizeL,
+                SizeXL = vm.SizeXL,
+                DateIn = DateTime.Now,
+                Supplier = vm.Supplier,
+                Contact = vm.Contact,
+                Price = vm.Price
+            };
+
+            _context.WareHouses.Add(newPr);
+            var product = await _context.Products.FindAsync(vm.ProductID);
+
+            if (product != null)
+            {
+                product.SizeS += vm.SizeS;
+                product.SizeM += vm.SizeM;
+                product.SizeL += vm.SizeL;
+                product.SizeXL += vm.SizeXL;
+
+                _context.Products.Update(product);
+            }
+
+            await _context.SaveChangesAsync();
+            return newPr;
+        }
+
+        public async Task<IEnumerable<WareHouseResponse>> GetDetailImport(string productID)
+        {
+            var details = await _context.WareHouses
+                .Where(w => w.ProductID == productID)
+                .OrderByDescending(w => w.DateIn)
+                .Select(w => new WareHouseResponse
+                {
+                    SizeS = w.SizeS,
+                    SizeM = w.SizeM,
+                    SizeL = w.SizeL,
+                    SizeXL = w.SizeXL,
+                    DateIn = w.DateIn,
+                    Price = w.Price
+                })
+                .ToListAsync();
+
+            return details;
         }
     }
 }
