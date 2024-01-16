@@ -8,5 +8,7 @@
         public int SizeXL { get; set; }
         public DateTime DateIn { get; set; }
         public decimal Price { get; set; }
+        public string? Supplier { get; set; }
+        public string? Contact { get; set; }
     }
 }

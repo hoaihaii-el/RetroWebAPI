@@ -678,7 +678,9 @@ namespace RetroFootballAPI.Services
                     SizeL = w.SizeL,
                     SizeXL = w.SizeXL,
                     DateIn = w.DateIn,
-                    Price = w.Price
+                    Price = w.Price,
+                    Supplier = w.Supplier,
+                    Contact = w.Contact
                 })
                 .ToListAsync();
 
