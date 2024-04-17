@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RetroFootballAPI.Attributes;
 using RetroFootballAPI.Models;
 using RetroFootballAPI.Repositories;
 using RetroFootballAPI.ViewModels;
@@ -90,6 +91,7 @@ namespace RetroFootballAPI.Controllers
         }
 
         [HttpGet("filter-by")]
+        [Cache(1000)]
         public async Task<IActionResult> FilterBy(
             [FromQuery] List<string> names,
             [FromQuery] List<string> seasons,

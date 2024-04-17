@@ -17,6 +17,7 @@ using RetroFootballAPI.StaticService;
 using RetroFootballAPI.StaticServices;
 using RetroFootballAPI.ViewModels;
 using RetroFootballWeb.Repository;
+using StackExchange.Redis;
 using System.Text;
 
 namespace RetroFootballAPI
@@ -26,7 +27,6 @@ namespace RetroFootballAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
 
             // Connection DB
             builder.Services.AddDbContext<DataContext>(options =>
@@ -104,16 +104,6 @@ namespace RetroFootballAPI
                 };
             });
 
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("CorsPolicy", x =>
-            //    {
-            //        x.AllowAnyOrigin()
-            //         .AllowAnyMethod()
-            //         .AllowAnyHeader();
-            //    });
-            //});
-
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", builder =>
@@ -126,6 +116,18 @@ namespace RetroFootballAPI
             });
 
             builder.Services.AddSignalR();
+
+            var redisConfiguration = new RedisConfiguration();
+            builder.Configuration.GetSection("RedisConfiguration").Bind(redisConfiguration);
+            builder.Services.AddSingleton(redisConfiguration);
+            builder.Services.AddSingleton<IConnectionMultiplexer>(_ => 
+                ConnectionMultiplexer.Connect(redisConfiguration.ConnectionString)
+            );
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConfiguration.ConnectionString;
+            });
+            builder.Services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
